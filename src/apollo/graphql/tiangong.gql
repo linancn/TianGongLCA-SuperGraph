@@ -1,32 +1,84 @@
+type Processes{
+  data_name:String
+  description:String
+  process_type:String
+  allocation:Allocation
+  dq_entry:String
+  category_name:String
+  category_path:String
+  exchanges:[Flows]
+  parameters:[Parameters]
+  documentation:[Ducumentations]
+}
+
+type Parameters{
+  data_name:String
+  value:Float
+  description:String
+  formula:String
+  input_parameter:Boolean
+  parameter_scope:String
+}
+
+type Ducumentations{
+  time_description:String
+  technology_description:String
+  geography_description:String
+  data_treatment_description:String
+  data_completeness_description:String
+  inventory_method_description:String
+  copyright:Boolean
+  creation_date:String
+  project_description:String
+  review_details:String
+}
+
+type Allocation{
+  default_allocation_method:String
+  infrastructure_flow:Boolean
+}
+
 type Flows {
-  # data_name: String
+  data_name: String
   # version: String
   # tags: String
   # library: String
-  # description: String
-  # synonyms: String
-  # infrastructure_flow: Boolean
-  # formula: String
+  description: String
+  synonyms: String
+  infrastructure_flow: Boolean
+  formula: String
+  cas: String
   # id: String
   # last_change: String
   # flow_type: String
-  cas: String
   # category_id: String
   category_name: String
   category_path: String
   # category_type: String
   flow_properties: [FlowProperties]
+  location:[Locations]
+  database:String
   # location_id: String
   # location_name: String
   # serial_number: Int
 }
+
 
 type FlowProperties{
   id: String
   data_name: String
 }
 
+type Locations{
+  data_name:String
+  description:String
+  longitude:Float
+  Latitude:Float
+  code:String
+}
+
 type Query {
+  allProcesses:[Processes]
   allFlows: [Flows]
   flowProperties: [FlowProperties]
 }
