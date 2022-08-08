@@ -8,13 +8,13 @@ interface Iresult {
 
 const prisma = new PrismaClient();
 
-async function uslci__flows() {
+async function flows() {
   // Data form database
-  const uslci__flows = await prisma.uslci__flows.findMany({
+  const flows = await prisma.flows.findMany({
     // where: {
     //   cas: '7429-90-5',
     // },
-    // take:88,
+    take:88,
     select: {
       cas: true,
       category_name: true,
@@ -26,7 +26,7 @@ async function uslci__flows() {
   let resultJson: any[] = [];
 
   // Fill in the data
-  uslci__flows?.forEach(item => {
+  flows?.forEach(item => {
     // Defining json item
     let result: Iresult = {
       cas: '',
@@ -50,10 +50,10 @@ async function uslci__flows() {
 const resolvers = {
   Query: {
     allFlows: () => {
-      return uslci__flows();
+      return flows();
     },
     flowProperties: () => {
-      return prisma.uslci__flow_properties.findMany({
+      return prisma.flow_properties.findMany({
         select: {
           id: true,
           data_name: true,
