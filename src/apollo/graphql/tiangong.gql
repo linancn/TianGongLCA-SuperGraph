@@ -1,0 +1,102 @@
+type Processes {
+  id:ID!
+  name:String!
+  product:String # steel
+  type:String! # unit process
+  allocation:String # e.g., economic, biological, physical
+  valid_period:[Time]
+  location:[Locations]
+  technology:Technologies
+  process_category_name:String
+  process_category_path:String
+  flow:[Flows]!
+  parameter:[Parameters]
+  source:[Sources]
+  data_preprocessing_description:String
+  actor:Actors
+}
+
+type Time{
+  time:int!
+}
+
+type Locations {
+  id:String!
+  name:String!
+  code:String
+  description:String
+}
+
+type Technologies{
+  boundary:String
+  treatment:String
+  standards:String
+  description:String
+  supporting_information:String
+}
+
+type Flows {
+  input_or_not:Boolean!
+  material_name:String!
+  material_amount_value:Float!
+  material_amount_conversion_factor:Float!
+  material_amount_unit_name:String!
+  material_amount_details:FlowAmounts
+  material_synonyms:String
+  material_formula:String
+  material_CAS_Registry_Number: String
+  flow_path:String! #Emission to air, to water, to soil...
+  flow_property_name:String  # Area, Area*Time，Number of items...
+  flow_property_type:String #physical quantity, economic quantity
+  flow_type:String! #Elementary, Product, Technoshphere...
+  flow_category_name:String
+  infrastructure_flow_or_not:Boolean
+  reference_flow_or_not:Boolean
+}
+
+type Parameters{
+  id:String!
+  name:String!
+  value:Float!
+  description:String
+  scope:String!
+}
+
+type FlowAmounts{
+  quantitative_reference:Boolean
+  reference_unit:String
+  unit_formula:String
+  unit_synonyms:String
+  unit_category:String
+  unit_group:String
+}
+
+type Sources{
+  id:String
+  name:String!
+  type:String # field operations, literature review, parameterization, etc.
+  description:String
+  full_text:String
+  url:String
+  coupyright:Boolean
+}
+
+type Actors{
+  documentor:Actor_Info
+  generator:Actor_Info
+  reviewer:Actor_Info
+  ownor:Actor_Info
+}
+
+type Actor_Info{
+  id:String!
+  name:String!
+  email:String
+  address:String
+  country_code:String
+}
+
+type Query {
+  allFlows: [Processes]
+  flowProperties: [FlowProperties]
+}
