@@ -1,84 +1,138 @@
-type Processes{
-  data_name:String
-  description:String
-  process_type:String
-  allocation:Allocation
-  dq_entry:String
-  category_name:String
-  category_path:String
-  exchanges:[Flows]
-  parameters:[Parameters]
-  documentation:[Ducumentations]
-}
-
-type Parameters{
-  data_name:String
-  value:Float
-  description:String
-  formula:String
-  input_parameter:Boolean
-  parameter_scope:String
-}
-
-type Ducumentations{
-  time_description:String
-  technology_description:String
-  geography_description:String
-  data_treatment_description:String
-  data_completeness_description:String
-  inventory_method_description:String
-  copyright:Boolean
-  creation_date:String
-  project_description:String
-  review_details:String
-}
-
-type Allocation{
-  default_allocation_method:String
-  infrastructure_flow:Boolean
-}
-
 type Flows {
-  data_name: String
-  # version: String
-  # tags: String
-  # library: String
-  description: String
-  synonyms: String
-  infrastructure_flow: Boolean
-  formula: String
-  cas: String
-  # id: String
-  # last_change: String
-  # flow_type: String
-  # category_id: String
-  category_name: String
-  category_path: String
-  # category_type: String
-  flow_properties: [FlowProperties]
-  location:[Locations]
+  flow_name: String
+  flow_description: String
+  flow_synonyms: String
+  #infrastructure_flow: Boolean
+  flow_formula: String
+  flow_cas: String
+  flow_type: String
   database:String
-  # location_id: String
-  # location_name: String
-  # serial_number: Int
+  flow_properties:FlowProperties
+  flow_category:Categories
+  flow_location:Locations
 }
 
+type Processes{
+  process_name:String
+  process_description:String
+  process_type:String
+  process_allocation_method_default:String
+  process_allocation_factors:[String]
+  process_exchanged_flows:[String]
+  process_parameters:[String]
+  database:String
+  categories:Categories
+  documentations:Ducumentations
+  data_quality_systems:DataQualitySystems
+}
 
 type FlowProperties{
-  id: String
-  data_name: String
+  flow_property_name:String
+  flow_property_description:String
+  flow_property_type:String
+  flow_property_category:Categories
+}
+
+type Categories{
+  category_name:String
+  category_subclass:String
+  category_class:[String]
 }
 
 type Locations{
-  data_name:String
-  description:String
-  longitude:Float
-  Latitude:Float
-  code:String
+  location_name:String
+  location_code:String
+  location_description:String
+  location_longitude:Float
+  location_latitude:Float
+  location_geometry_type:String
+  location_geometry_geometries:String
+  location_geometry_coordinates:String
+}
+
+type Ducumentations{
+  documentation_data_collection_description:String
+  documentation_time_description:String
+  documentation_technology_description:String
+  documentation_geography_description:String
+  documentation_data_selection_description:String
+  documentation_data_treatment_description:String
+  documentation_completeness_description:String
+  documentation_inventory_method_description:String
+  documentation_modeling_constants_description:String
+  documentation_intended_application:String
+  documentation_restrictions_description:String
+  documentation_copyright:Boolean
+  documentation_creation_date:String
+  documentation_project_description:String
+  documentation_review_details:String
+  documentation_valid_from:String
+  documentation_valid_until:String
+  documentation_sources:String
+  documentation_publication:Sources
+  documentation_documentor:Actors
+  documentation_generator:Actors
+  documentation_reviewer:Actors
+  documentation_owner:Actors
+}
+
+
+type Sources{
+  source_name:String
+  source_description:String
+  source_text_reference:String
+  source_url:String
+  source_database:String
+  source_category:Categories
+}
+
+type DataQualitySystems{
+  data_quality_system_name:String
+  data_quality_system_description:String
+  data_quality_system_has_uncertainty:Boolean
+  data_quality_system_indicators:String
+  data_quality_system_source:Sources
+}
+
+type Actors{
+  actor_name:String
+  actor_description:String
+  actor_telefax:String
+  actor_website:String
+  actor_address:String
+  actor_email:String
+  actor_telephone:String
+  actor_country:String
+  actor_city:String
+  actor_zip_code:String
+  actor_category:Categories
+}
+
+
+type LCIA_Methods{
+  LCIA_method_name:String
+  LCIA_method_description:String
+  LCIA_method_impact_categories:String
+  LCIA_method_nw_sets:String
+}
+
+type LCIA_Categories{
+  LCIA_category_name:String
+  LCIA_category_description:String
+  LCIA_category_reference_unit_name:String
+  LCIA_category_impact_factors:String
+}
+
+type LCIA_NW_Sets{
+  LCIA_NW_Set_name:String
+  LCIA_NW_Set_description:String
+  LCIA_NW_Set_factor:String
+  LCIA_NW_Set_weighted_score_unit:String
 }
 
 type Query {
   allProcesses:[Processes]
   allFlows: [Flows]
-  flowProperties: [FlowProperties]
+  allFlowProperties:[FlowProperties]
+  allCategories:[Categories]
 }
