@@ -9,7 +9,7 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model lcia_categories {
-  id                  String  @db.VarChar(255)
+  id                  String  @db.Uuid
   data_name           String? @db.VarChar(2048)
   version             String? @db.VarChar(255)
   reference_unit_name String? @db.VarChar(255)
@@ -20,7 +20,7 @@ model lcia_categories {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model lcia_methods {
-  id                String    @db.VarChar(255)
+  id                String    @db.Uuid
   data_name         String?   @db.VarChar(2048)
   description       String?
   version           String?   @db.VarChar(255)
@@ -38,7 +38,7 @@ model lcia_nw_sets {
   data_name           String?   @db.VarChar(2048)
   description         String?
   version             String?   @db.VarChar(255)
-  id                  String    @db.VarChar(255)
+  id                  String    @db.Uuid
   last_change         DateTime? @db.Timestamptz(0)
   factors             Json?
   weighted_score_unit String?   @db.VarChar(255)
@@ -106,15 +106,15 @@ model currencies {
 }
 
 model dq_systems {
-  data_name         String? @db.VarChar(2048)
+  data_name         String?  @db.VarChar(2048)
   description       String?
-  id                String  @db.Uuid
-  has_uncertainties String? @db.VarChar(255)
+  id                String   @db.Uuid
+  has_uncertainties Boolean?
   indicators        Json?
-  source_id         String? @db.VarChar(255)
-  source_name       String? @db.VarChar(255)
-  database          String? @db.VarChar(255)
-  serial_number     Int     @id @default(autoincrement())
+  source_id         String?  @db.VarChar(255)
+  source_name       String?  @db.VarChar(255)
+  database          String?  @db.VarChar(255)
+  serial_number     Int      @id @default(autoincrement())
 }
 
 model flow_properties {

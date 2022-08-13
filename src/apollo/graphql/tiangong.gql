@@ -1,4 +1,4 @@
-type Flows {
+type Flow {
   flow_name: String
   flow_description: String
   flow_synonyms: String
@@ -7,12 +7,14 @@ type Flows {
   flow_cas: String
   flow_type: String
   database:String
-  flow_properties:FlowProperties
-  flow_category:Categories
-  flow_location:Locations
+  flow_category_id:String
+  flow_category_name:String
+  flow_categories:[Category]
+  flow_properties:[FlowProperty]
+  flow_locations:[Location]
 }
 
-type Processes{
+type Process{
   process_name:String
   process_description:String
   process_type:String
@@ -21,25 +23,26 @@ type Processes{
   process_exchanged_flows:[String]
   process_parameters:[String]
   database:String
-  categories:Categories
-  documentations:Ducumentations
-  data_quality_systems:DataQualitySystems
+  process_categories:[Category]
+  documentations:[Ducumentation]
+  data_quality_systems:[DataQualitySystem]
 }
 
-type FlowProperties{
+type FlowProperty{
   flow_property_name:String
   flow_property_description:String
   flow_property_type:String
-  flow_property_category:Categories
+  flow_property_categories:[Category]
 }
 
-type Categories{
+type Category{
+  category_id:String
   category_name:String
   category_subclass:String
   category_class:[String]
 }
 
-type Locations{
+type Location{
   location_name:String
   location_code:String
   location_description:String
@@ -50,7 +53,7 @@ type Locations{
   location_geometry_coordinates:String
 }
 
-type Ducumentations{
+type Ducumentation{
   documentation_data_collection_description:String
   documentation_time_description:String
   documentation_technology_description:String
@@ -69,32 +72,32 @@ type Ducumentations{
   documentation_valid_from:String
   documentation_valid_until:String
   documentation_sources:String
-  documentation_publication:Sources
-  documentation_documentor:Actors
-  documentation_generator:Actors
-  documentation_reviewer:Actors
-  documentation_owner:Actors
+  documentation_publication:[Source]
+  documentation_documentor:[Actor]
+  documentation_generator:[Actor]
+  documentation_reviewer:[Actor]
+  documentation_owner:[Actor]
 }
 
 
-type Sources{
+type Source{
   source_name:String
   source_description:String
   source_text_reference:String
   source_url:String
   source_database:String
-  source_category:Categories
+  source_categories:[Category]
 }
 
-type DataQualitySystems{
+type DataQualitySystem{
   data_quality_system_name:String
   data_quality_system_description:String
   data_quality_system_has_uncertainty:Boolean
   data_quality_system_indicators:String
-  data_quality_system_source:Sources
+  data_quality_system_source:[Source]
 }
 
-type Actors{
+type Actor{
   actor_name:String
   actor_description:String
   actor_telefax:String
@@ -105,7 +108,7 @@ type Actors{
   actor_country:String
   actor_city:String
   actor_zip_code:String
-  actor_category:Categories
+  actor_categories:Category
 }
 
 
@@ -131,8 +134,6 @@ type LCIA_NW_Sets{
 }
 
 type Query {
-  allProcesses:[Processes]
-  allFlows: [Flows]
-  allFlowProperties:[FlowProperties]
-  allCategories:[Categories]
+  allCategories:[Category]
+  allFlows: [Flow]
 }

@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, categories } from '@prisma/client';
 
 interface Iresult_flows {
   flow_name:string;
@@ -7,17 +7,13 @@ interface Iresult_flows {
   flow_synonyms:string;
   flow_type:string;
   database:string;
-  // category_name: string;
-  // category_path: string[];
-  // category_id:string;
+  flow_category_id:string;
+  flow_category_name:string;
 }
 const prisma = new PrismaClient();
-async function flows() {
+async function flow() {
   // Data form database
   const flows = await prisma.flows.findMany({
-    // where: {
-    //   cas: '7429-90-5',
-    // },
     take:88,
     select: {
       data_name:true,
@@ -26,11 +22,12 @@ async function flows() {
       synonyms:true,
       flow_type:true,
       database:true,
-      // category_id:true,
+      category_id:true,
+      category_name:true
     },
   });
   // Defining the new json array schema
-  let resultJson: any[] = [];
+  let resultJson_flows: any[] = [];
   // Fill in the data
   flows?.forEach(item => {
     // Defining json item
@@ -41,9 +38,8 @@ async function flows() {
       flow_synonyms:'',
       flow_type:'',
       database:'',
-      // category_id:'',
-      // category_name: '',
-      // category_path: [''],
+      flow_category_id:'',
+      flow_category_name:'',
     };
     result.flow_name = item?.data_name;
     result.flow_cas = item?.cas;
@@ -51,87 +47,81 @@ async function flows() {
     result.flow_synonyms = item?.synonyms;
     result.flow_type = item?.flow_type;
     result.database = item?.database;
-    // result.category_id=item?.category_id;
-    // result.category_name = item?.category_name;
-    // const category_path_list = item?.category_path as Prisma.JsonArray;
-    // let bufferArray: string[] = [];
-    // category_path_list?.forEach(item => {
-    //   bufferArray.push(item?.toString());
-    // });
-    // result.category_path = bufferArray;
-    resultJson.push(result);
+    result.flow_category_id = item?.category_id;
+    result.flow_category_name = item?.category_name;
+    resultJson_flows.push(result);
   });
-
-  return resultJson;
+  return resultJson_flows;
 }
-
-
-interface Iresult_flow_properties {
-  flow_property_name:string;
-  flow_property_description:string;
-  flow_property_type:string;
-  // flow_property_category:Categories
-}
-async function flow_properties() {
-  // Data form database
-  const flow_properties = await prisma.flow_properties.findMany({
-    // take:88,
-    select: {
-      data_name:true,
-      description:true,
-      flow_property_type:true,
-    },
-  });
-  // Defining the new json array schema
-  let resultJson_flow_properties: any[] = [];
-  // Fill in the data
-  flow_properties?.forEach(item => {
-    // Defining json item
-    let result: Iresult_flow_properties = {
-      flow_property_name: '',
-      flow_property_description:'',
-      flow_property_type:'',
-    };
-    result.flow_property_name = item?.data_name;
-    result.flow_property_description = item?.description;
-    result.flow_property_type = item?.flow_property_type;
-    resultJson_flow_properties.push(result);
-  });
-  return resultJson_flow_properties;
-}
+// interface Iresult_flow_properties {
+//   flow_property_name:string;
+//   flow_property_description:string;
+//   flow_property_type:string;
+//   // flow_property_category:Categories
+// }
+// async function flow_properties(flow_category_id) {
+//   // Data form database
+//   const flow_properties = await prisma.flow_properties.findMany({
+//     // take:88,
+//     where:{
+//       id:flow_category_id,
+//     },
+//     select: {
+//       data_name:true,
+//       description:true,
+//       flow_property_type:true,
+//     },
+//   });
+//   // Defining the new json array schema
+//   let resultJson_flow_properties: any[] = [];
+//   // Fill in the data
+//   flow_properties?.forEach(item => {
+//     // Defining json item
+//     let result: Iresult_flow_properties = {
+//       flow_property_name: '',
+//       flow_property_description:'',
+//       flow_property_type:'',
+//     };
+//     result.flow_property_name = item?.data_name;
+//     result.flow_property_description = item?.description;
+//     result.flow_property_type = item?.flow_property_type;
+//     resultJson_flow_properties.push(result);
+//   });
+//   return resultJson_flow_properties;
+// }
 
 interface Iresult_categories {
+  category_id:string;
   category_name:string;
   category_subclass:string;
   category_class:string[];
-  id:string;
+  // id:string;
 }
-async function categories() {
+async function Category() {
   // Data form database
   const categories = await prisma.categories.findMany({
-    take:88,
     select: {
       data_name:true,
       category_name:true,
       category_path:true,
-    },
-    // where:{
-    //   id:true,
-    // }
+      id:true,
+    }
+
   });
   // Defining the new json array schema
-  let resultJson_categories: any[] = [];
+  let resultJson_categories: any [] = [];
   // Fill in the data
   categories?.forEach(item => {
     // Defining json item
     let result: Iresult_categories = {
       category_name: '',
-      category_subclass:'',
-      category_class:[''],
-      id:'',
+      category_subclass: '',
+      category_class: [''],
+      category_id: '',
     };
     result.category_name = item?.data_name;
     result.category_subclass = item?.category_name;
+    result.category_id = item?.id;
     const category_class_list = item?.category_path as Prisma.JsonArray;
     let bufferArray: string[] = [];
     category_class_list?.forEach(item => {
@@ -143,61 +133,19 @@ async function categories() {
   return resultJson_categories;
 }
 
-interface Iresult_processes {
-  process_name:string;
-  process_description:string;
-  process_type:string;
-  process_allocation_method_default:string;
-  process_allocation_factors:string[];
-  process_exchanged_flows:string[];
-  process_parameters:string[];
-  database:string;
-}
-
-// async function processes() {
-//   // Data form database
-//   const processes = await prisma.processes.findMany({
-//     take:88,
-//     // where:{
-//     //   '':,
-
-//     // },
-//     select: {
-//       data_name:true,
-//       category_name:true,
-//       category_path:true,
-//     },
-//   });
-//   // Defining the new json array schema
-//   let resultJson_categories: any[] = [];
-//   // Fill in the data
-//   categories?.forEach(item => {
-//     // Defining json item
-//     let result: Iresult_categories = {
-//       category_name: '',
-//       category_subclass:'',
-//       category_class:[''],
-//     };
-//     result.category_name = item?.data_name;
-//     result.category_subclass = item?.category_name;
-//     const category_class_list = item?.category_path as Prisma.JsonArray;
-//     let bufferArray: string[] = [];
-//     category_class_list?.forEach(item => {
-//       bufferArray.push(item?.toString());
-//     });
-//     result.category_class = bufferArray;
-//     resultJson_categories.push(result);
-//   });
-//   return resultJson_categories;
-// }
-
 
 const resolvers = {
   Query: {
-    allFlows: () => {return flows();},
-    allFlowProperties: () => {return flow_properties();},
-    allCategories:() => {return categories();},
+    allFlows:() => {return flow()},
+    // allCategories:()=>{return Category()}
   },
-};
+}
+  // flow_category:{
+  //   ()=>{return categories(parent.flo_category_id)}
+  // }
+  // flow_category:{
+  //   allFlows(parent){return categories(parent.flow_category_id)},
+  // },
+  // Flow:{allFlows(parent){return categories(parent.flow_category_id)},},
 
 export default resolvers;
