@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma, categories } from '@prisma/client';
+import { Context } from 'apollo-server-core';
 
 interface Iresult_flows {
   flow_name:string;
@@ -9,6 +10,7 @@ interface Iresult_flows {
   database:string;
   flow_category_id:string;
   flow_category_name:string;
+  flow_properties:string;
 }
 const prisma = new PrismaClient();
 async function flow() {
@@ -23,7 +25,8 @@ async function flow() {
       flow_type:true,
       database:true,
       category_id:true,
-      category_name:true
+      category_name:true,
+      flow_properties:true
     },
   });
   // Defining the new json array schema
@@ -40,6 +43,7 @@ async function flow() {
       database:'',
       flow_category_id:'',
       flow_category_name:'',
+      flow_properties:'',
     };
     result.flow_name = item?.data_name;
     result.flow_cas = item?.cas;
@@ -49,62 +53,29 @@ async function flow() {
     result.database = item?.database;
     result.flow_category_id = item?.category_id;
     result.flow_category_name = item?.category_name;
+    result.flow_properties = JSON.stringify(item?.flow_properties)
     resultJson_flows.push(result);
   });
   return resultJson_flows;
 }
-// interface Iresult_flow_properties {
-//   flow_property_name:string;
-//   flow_property_description:string;
-//   flow_property_type:string;
-//   // flow_property_category:Categories
-// }
-// async function flow_properties(flow_category_id) {
-//   // Data form database
-//   const flow_properties = await prisma.flow_properties.findMany({
-//     // take:88,
-//     where:{
-//       id:flow_category_id,
-//     },
-//     select: {
-//       data_name:true,
-//       description:true,
-//       flow_property_type:true,
-//     },
-//   });
-//   // Defining the new json array schema
-//   let resultJson_flow_properties: any[] = [];
-//   // Fill in the data
-//   flow_properties?.forEach(item => {
-//     // Defining json item
-//     let result: Iresult_flow_properties = {
-//       flow_property_name: '',
-//       flow_property_description:'',
-//       flow_property_type:'',
-//     };
-//     result.flow_property_name = item?.data_name;
-//     result.flow_property_description = item?.description;
-//     result.flow_property_type = item?.flow_property_type;
-//     resultJson_flow_properties.push(result);
-//   });
-//   return resultJson_flow_properties;
-// }
 
 interface Iresult_categories {
-  category_id:string;
+  // id:string;
   category_name:string;
   category_subclass:string;
   category_class:string[];
   // id:string;
 }
-async function Category() {
+async function Category(category_id:string) {
   // Data form database
   const categories = await prisma.categories.findMany({
+    // where: {
+    //   id:category_id,
+    // },
     select: {
       data_name:true,
       category_name:true,
       category_path:true,
-      id:true,
     }
 
   });
@@ -117,11 +88,11 @@ async function Category() {
       category_name: '',
       category_subclass: '',
       category_class: [''],
-      category_id: '',
+      // category_id: '',
     };
     result.category_name = item?.data_name;
     result.category_subclass = item?.category_name;
-    result.category_id = item?.id;
+    // result.category_id = item?.id;
     const category_class_list = item?.category_path as Prisma.JsonArray;
     let bufferArray: string[] = [];
     category_class_list?.forEach(item => {
@@ -137,11 +108,18 @@ async function Category() {
 const resolvers = {
   Query: {
     allFlows:() => {return flow()},
-    // allCategories:()=>{return Category()}
+    allCategories: ()=>{return Category()}
   },
+  // Flow:{
+  //   flow_categories: (parent,_args,context:Context)=>{
+  //     return 
+  //     Category({category_id:parent?.flow_category_id})
+
+  //   }
+  // },
 }
   // flow_category:{
-  //   ()=>{return categories(parent.flo_category_id)}
+  //   ()=>{return categories(parent.flow_category_id)}
   // }
   // flow_category:{
   //   allFlows(parent){return categories(parent.flow_category_id)},

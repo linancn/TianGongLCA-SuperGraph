@@ -9,9 +9,9 @@ type Flow {
   database:String
   flow_category_id:String
   flow_category_name:String
-  flow_categories:[Category]
-  flow_properties:[FlowProperty]
-  flow_locations:[Location]
+  flow_properties:String
+  flow_categories:Category
+  flow_locations:Location
 }
 
 type Process{
@@ -36,7 +36,8 @@ type FlowProperty{
 }
 
 type Category{
-  category_id:String
+  id:ID!
+  #category_id:String
   category_name:String
   category_subclass:String
   category_class:[String]
@@ -136,4 +137,6 @@ type LCIA_NW_Sets{
 type Query {
   allCategories:[Category]
   allFlows: [Flow]
+  allProcesses: [Process]
+  allFlowProperties:[FlowProperty]
 }
