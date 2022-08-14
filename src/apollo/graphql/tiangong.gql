@@ -44,13 +44,12 @@ type Category{
 
 type Location{
   name:String
-  #code:String
-  #description:String
-  #longitude:Float
-  #latitude:Float
-  #geometry_type:String
-  #geometry_geometries:String
-  #location_geometry_coordinates:[String]
+  code:String
+  description:String
+  longitude:Float
+  latitude:Float
+  geometry_type:String
+  geometry_geometries:String
 }
 
 type Ducumentation{
