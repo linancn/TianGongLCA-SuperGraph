@@ -73,7 +73,7 @@ model bin_sources {
 }
 
 model categories {
-  id            String  @db.VarChar(255)
+  id            String  @db.Uuid
   data_name     String? @db.VarChar(2048)
   model_type    String? @db.VarChar(255)
   category_id   String? @db.VarChar(255)

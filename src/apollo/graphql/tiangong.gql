@@ -23,20 +23,19 @@ type Process{
   process_exchanged_flows:[String]
   process_parameters:[String]
   database:String
-  process_categories:[Category]
-  documentations:[Ducumentation]
-  data_quality_systems:[DataQualitySystem]
+  process_categories:Category
+  documentations:Ducumentation
+  data_quality_systems:DataQualitySystem
 }
 
 type FlowProperty{
   flow_property_name:String
   flow_property_description:String
   flow_property_type:String
-  flow_property_categories:[Category]
+  flow_property_categories:Category
 }
 
 type Category{
-  id:ID!
   #category_id:String
   category_name:String
   category_subclass:String
@@ -44,14 +43,14 @@ type Category{
 }
 
 type Location{
-  location_name:String
-  location_code:String
-  location_description:String
-  location_longitude:Float
-  location_latitude:Float
-  location_geometry_type:String
-  location_geometry_geometries:String
-  location_geometry_coordinates:String
+  name:String
+  #code:String
+  #description:String
+  #longitude:Float
+  #latitude:Float
+  #geometry_type:String
+  #geometry_geometries:String
+  #location_geometry_coordinates:[String]
 }
 
 type Ducumentation{
@@ -73,11 +72,11 @@ type Ducumentation{
   documentation_valid_from:String
   documentation_valid_until:String
   documentation_sources:String
-  documentation_publication:[Source]
-  documentation_documentor:[Actor]
-  documentation_generator:[Actor]
-  documentation_reviewer:[Actor]
-  documentation_owner:[Actor]
+  documentation_publication:Source
+  documentation_documentor:Actor
+  documentation_generator:Actor
+  documentation_reviewer:Actor
+  documentation_owner:Actor
 }
 
 
@@ -87,7 +86,7 @@ type Source{
   source_text_reference:String
   source_url:String
   source_database:String
-  source_categories:[Category]
+  source_categories:Category
 }
 
 type DataQualitySystem{
@@ -95,7 +94,7 @@ type DataQualitySystem{
   data_quality_system_description:String
   data_quality_system_has_uncertainty:Boolean
   data_quality_system_indicators:String
-  data_quality_system_source:[Source]
+  data_quality_system_source:Source
 }
 
 type Actor{
@@ -136,7 +135,8 @@ type LCIA_NW_Sets{
 
 type Query {
   allCategories:[Category]
-  allFlows: [Flow]
+  Flows: [Flow]
+  Locations:[Location]
   allProcesses: [Process]
   allFlowProperties:[FlowProperty]
 }

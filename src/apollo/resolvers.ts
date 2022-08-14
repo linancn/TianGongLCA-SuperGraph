@@ -1,6 +1,11 @@
 import { PrismaClient, Prisma, categories } from '@prisma/client';
-import { Context } from 'apollo-server-core';
 
+
+
+
+const prisma = new PrismaClient();
+interface Context {prisma: PrismaClient};
+const context: Context = {prisma: prisma,};
 interface Iresult_flows {
   flow_name:string;
   flow_description:string;
@@ -11,8 +16,9 @@ interface Iresult_flows {
   flow_category_id:string;
   flow_category_name:string;
   flow_properties:string;
+  location_id:string;
+  location_name:string;
 }
-const prisma = new PrismaClient();
 async function flow() {
   // Data form database
   const flows = await prisma.flows.findMany({
@@ -26,7 +32,9 @@ async function flow() {
       database:true,
       category_id:true,
       category_name:true,
-      flow_properties:true
+      flow_properties:true,
+      location_id:true,
+      location_name:true,
     },
   });
   // Defining the new json array schema
@@ -44,6 +52,8 @@ async function flow() {
       flow_category_id:'',
       flow_category_name:'',
       flow_properties:'',
+      location_id:'',
+      location_name:'',
     };
     result.flow_name = item?.data_name;
     result.flow_cas = item?.cas;
@@ -54,76 +64,113 @@ async function flow() {
     result.flow_category_id = item?.category_id;
     result.flow_category_name = item?.category_name;
     result.flow_properties = JSON.stringify(item?.flow_properties)
+    result.location_id = item?.location_id;
+    result.location_name = item?.location_name;
     resultJson_flows.push(result);
   });
   return resultJson_flows;
 }
 
-interface Iresult_categories {
-  // id:string;
-  category_name:string;
-  category_subclass:string;
-  category_class:string[];
-  // id:string;
+// interface Iresult_categories {
+//   // id:string;
+//   category_id:string;
+//   category_name:string;
+//   category_subclass:string;
+//   category_class:string[];
+//   // id:string;
+// }
+// async function Categories() {
+//   // Data form database
+//   const categories = await prisma.categories.findMany({
+//     // where: {
+//     //   id:category_id,
+//     // },
+//     select: {
+//       id:true,
+//       data_name:true,
+//       category_name:true,
+//       category_path:true,
+//     }
+//   });
+//   // Defining the new json array schema
+//   let resultJson_categories: any [] = [];
+//   // Fill in the data
+//   categories?.forEach(item => {
+//     // Defining json item
+//     let result: Iresult_categories = {
+//       category_name: '',
+//       category_subclass: '',
+//       category_class: [''],
+//       // category_id: '',
+//     };
+//     result.category_name = item?.data_name;
+//     result.category_subclass = item?.category_name;
+//     // result.category_id = item?.id;
+//     const category_class_list = item?.category_path as Prisma.JsonArray;
+//     let bufferArray: string[] = [];
+//     category_class_list?.forEach(item => {
+//       bufferArray.push(item?.toString());
+//     });
+//     result.category_class = bufferArray;
+//     resultJson_categories.push(result);
+//   });
+//   return resultJson_categories;
+// }
+
+interface Iresult_locations {
+  name:string
 }
-async function Category(category_id:string) {
+
+async function Location() {
   // Data form database
-  const categories = await prisma.categories.findMany({
-    // where: {
-    //   id:category_id,
-    // },
+  const locations = await prisma.locations.findMany({
+    take:88,
     select: {
       data_name:true,
-      category_name:true,
-      category_path:true,
-    }
-
+    },
   });
   // Defining the new json array schema
-  let resultJson_categories: any [] = [];
+  let resultJson_locations: any[] = [];
   // Fill in the data
-  categories?.forEach(item => {
+  locations?.forEach(item => {
     // Defining json item
-    let result: Iresult_categories = {
-      category_name: '',
-      category_subclass: '',
-      category_class: [''],
-      // category_id: '',
+    let result: Iresult_locations = {
+      name:'',
     };
-    result.category_name = item?.data_name;
-    result.category_subclass = item?.category_name;
-    // result.category_id = item?.id;
-    const category_class_list = item?.category_path as Prisma.JsonArray;
-    let bufferArray: string[] = [];
-    category_class_list?.forEach(item => {
-      bufferArray.push(item?.toString());
-    });
-    result.category_class = bufferArray;
-    resultJson_categories.push(result);
+    result.name = item?.data_name;
+    resultJson_locations.push(result);
   });
-  return resultJson_categories;
+  return resultJson_locations;
 }
+
 
 
 const resolvers = {
   Query: {
-    allFlows:() => {return flow()},
-    allCategories: ()=>{return Category()}
+    Flows() {return flow()},
+    Locations() {return Location()}
   },
-  // Flow:{
-  //   flow_categories: (parent,_args,context:Context)=>{
-  //     return 
-  //     Category({category_id:parent?.flow_category_id})
-
-  //   }
-  // },
+  Flow:{
+    async flow_categories(parent){
+      // const categories = await prisma.categories.findFirst({ where: {data_name: parent.flow_category_name,category_type:'Flow'}, select: {category_name: true,category_path:true} })
+      const categories = await prisma.categories.findFirst({ where: { id: parent.flow_category_id??'Null'}, select:{data_name:true,category_name: true,category_path:true}})
+      const category_class_list  = categories.category_path as Prisma.JsonArray ;
+      let bufferArray: string []=[];
+      category_class_list?.forEach(item=>{
+        bufferArray.push(item?.toString());
+      })
+      return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
+    },
+    async flow_locations(parent){
+      const location = await prisma.locations.findFirst({ 
+        where: {data_name: parent.location_name??'Null'}, 
+        // where: {id: parent.location_id??'Null'}, 
+      select:{data_name:true,description:true,longitude:true,latitude:true,code:true,geometry_type:true,geometry_geometries:true}})
+      // select:{data_name:true}})
+      return {'name':location.data_name,'code':location.code,'description':location.description,'longitude':location.longitude,'latitude':location.latitude,'geometry_type':location.geometry_type,'geometry_geometries':JSON.stringify(location.geometry_geometries)}
+      // return {'name':location.data_name}
+    },
+  }
 }
-  // flow_category:{
-  //   ()=>{return categories(parent.flow_category_id)}
-  // }
-  // flow_category:{
-  //   allFlows(parent){return categories(parent.flow_category_id)},
-  // },
-  // Flow:{allFlows(parent){return categories(parent.flow_category_id)},},
 
 export default resolvers;
