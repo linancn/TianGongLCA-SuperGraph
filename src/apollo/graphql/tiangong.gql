@@ -7,8 +7,8 @@ type Flow {
   flow_cas: String
   flow_type: String
   database:String
-  flow_category_id:String
-  flow_category_name:String
+  #flow_category_id:String
+  #flow_category_name:String
   flow_properties:String
   flow_categories:Category
   flow_locations:Location
@@ -19,13 +19,23 @@ type Process{
   process_description:String
   process_type:String
   process_allocation_method_default:String
-  process_allocation_factors:[String]
-  process_exchanged_flows:[String]
-  process_parameters:[String]
+  process_allocation_factors:String
+  process_exchanged_flows:String
+  process_parameters:String
+  process_locations:Location
   database:String
+  process_valid_period:Time
   process_categories:Category
   documentations:Ducumentation
+  data_descriptions:DataDescription
   data_quality_systems:DataQualitySystem
+}
+type DataDescription{
+  collection:String
+  selection:String
+  treatment:String
+  sampling:String
+  completeness:String
 }
 
 type FlowProperty{
@@ -33,6 +43,11 @@ type FlowProperty{
   flow_property_description:String
   flow_property_type:String
   flow_property_categories:Category
+}
+
+type Time{
+  time_from:[String]
+  time_until:[String]
 }
 
 type Category{
@@ -53,39 +68,37 @@ type Location{
 }
 
 type Ducumentation{
-  documentation_data_collection_description:String
-  documentation_time_description:String
-  documentation_technology_description:String
-  documentation_geography_description:String
-  documentation_data_selection_description:String
-  documentation_data_treatment_description:String
-  documentation_completeness_description:String
-  documentation_inventory_method_description:String
-  documentation_modeling_constants_description:String
-  documentation_intended_application:String
-  documentation_restrictions_description:String
-  documentation_copyright:Boolean
-  documentation_creation_date:String
-  documentation_project_description:String
-  documentation_review_details:String
-  documentation_valid_from:String
-  documentation_valid_until:String
-  documentation_sources:String
-  documentation_publication:Source
-  documentation_documentor:Actor
-  documentation_generator:Actor
-  documentation_reviewer:Actor
-  documentation_owner:Actor
+  time:String
+  technology:String
+  geography:String
+  project:String
+  inventory_method:String
+
+  modeling_constants:String
+  intended_applications:String
+  restrictions:String
+
+  copyright:Boolean
+  creation_date:String
+  
+  review_details:String
+  sources:String
+
+  publication:Source
+  documentor:Actor
+  generator:Actor
+  reviewer:Actor
+  owner:Actor
 }
 
 
 type Source{
-  source_name:String
-  source_description:String
-  source_text_reference:String
-  source_url:String
-  source_database:String
-  source_categories:Category
+  name:String
+  description:String
+  year:String
+  text_reference:String
+  url:String
+  categories:Category
 }
 
 type DataQualitySystem{
@@ -97,17 +110,17 @@ type DataQualitySystem{
 }
 
 type Actor{
-  actor_name:String
-  actor_description:String
-  actor_telefax:String
-  actor_website:String
-  actor_address:String
-  actor_email:String
-  actor_telephone:String
-  actor_country:String
-  actor_city:String
-  actor_zip_code:String
-  actor_categories:Category
+  name:String
+  description:String
+  telefax:String
+  website:String
+  address:String
+  email:String
+  telephone:String
+  country:String
+  city:String
+  zip_code:String
+  categories:Category
 }
 
 
@@ -133,9 +146,8 @@ type LCIA_NW_Sets{
 }
 
 type Query {
-  allCategories:[Category]
   Flows: [Flow]
-  Locations:[Location]
-  allProcesses: [Process]
-  allFlowProperties:[FlowProperty]
+  Processes: [Process]
+  Categories:[Category]
+  FlowProperties:[FlowProperty]
 }
