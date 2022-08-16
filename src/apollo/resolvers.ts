@@ -79,14 +79,14 @@ interface Iresult_process {
   id:string;
   category_id:string;
   location_id:string;
-  process_name:string;
+  name:string;
   exchange_dq_system_id:string;
-  process_description:string;
-  process_type:string;
-  process_allocation_method_default:string;
-  process_allocation_factors:string;
-  process_exchanged_flows:string;
-  process_parameters:string;
+  description:string;
+  type:string;
+  allocation_method:string;
+  allocation_factors:string;
+  exchanged_flows:string;
+  parameters:string;
   database:string;
 }
 async function process() {
@@ -118,27 +118,27 @@ async function process() {
       category_id:'',
       location_id:'',
       exchange_dq_system_id:'',
-      process_name:'',
-      process_description:'',
-      process_type:'',
-      process_allocation_method_default:'',
-      process_allocation_factors:'',
-      process_exchanged_flows:'',
-      process_parameters:'',
+      name:'',
+      description:'',
+      type:'',
+      allocation_method:'',
+      allocation_factors:'',
+      exchanged_flows:'',
+      parameters:'',
       database:'',
     };
     result.id = item?.id;
     result.category_id = item?.category_id;
     result.location_id = item?.location_id;
     result.exchange_dq_system_id = item?.exchange_dq_system_id;
-    result.process_name = item?.data_name;
-    result.process_description = item?.description;
-    result.process_type = item?.process_type;
+    result.name = item?.data_name;
+    result.description = item?.description;
+    result.type = item?.process_type;
     result.database = item?.database;
-    result.process_allocation_method_default = item?.default_allocation_method;
-    result.process_allocation_factors = JSON.stringify(item?.allocation_factors);
-    result.process_exchanged_flows = JSON.stringify(item?.exchanges);
-    result.process_parameters = JSON.stringify(item?.parameters);
+    result.allocation_method = item?.default_allocation_method;
+    result.allocation_factors = JSON.stringify(item?.allocation_factors);
+    result.exchanged_flows = JSON.stringify(item?.exchanges);
+    result.parameters = JSON.stringify(item?.parameters);
     Iresult_process.push(result);
   });
   return Iresult_process;
@@ -202,6 +202,52 @@ async function category(category_id:string) {
   let bufferArray: string []=[];
   category_class_list?.forEach(item=>{bufferArray.push(item?.toString());})
   return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
+}
+
+interface Iresult_actors{
+  name:string
+  description:string
+  telefax:string
+  website:string
+  address:string
+  email:string
+  telephone:string
+  country:string
+  city:string
+  zip_code:string
+}
+
+async function actor(actor_id:string) {
+  // Data form database
+  const actor = await prisma.actors.findFirst({
+    where:{id : actor_id},
+    select:{
+      data_name:true,
+      description:true,
+      telefax:true,
+      website:true,
+      address:true,
+      email:true,
+      telephone:true,
+      country:true,
+      city:true,
+      zip_code:true,
+      // for child
+      category_id:true,
+    }
+  })
+  return {
+    'name':actor.data_name,
+    'description':actor.description,
+    'telefax':actor.telefax,
+    'website':actor.website,
+    'address':actor.address,
+    'email':actor.email,
+    'telephone':actor.telephone,
+    'country':actor.country,
+    'city':actor.city,
+    'zip_code':actor.zip_code,
+  }
 }
 
 const resolvers = {
@@ -333,130 +379,10 @@ const resolvers = {
           'url':source.url,
           }
     },
-    async documentor(parent) {
-      const actor = await prisma.actors.findFirst({
-        where:{id : parent.process_documentation_data_documentor_id},
-        select:{
-          data_name:true,
-          description:true,
-          telefax:true,
-          website:true,
-          address:true,
-          email:true,
-          telephone:true,
-          country:true,
-          city:true,
-          zip_code:true,
-          // for child
-          category_id:true,
-        }
-      })
-      return {
-        'name':actor.data_name,
-        'description':actor.description,
-        'telefax':actor.telefax,
-        'website':actor.website,
-        'address':actor.address,
-        'email':actor.email,
-        'telephone':actor.telephone,
-        'country':actor.country,
-        'city':actor.city,
-        'zip_code':actor.zip_code,
-      }
-    },
-    async generator(parent) {
-      const actor = await prisma.actors.findFirst({
-        where:{id : parent.process_documentation_data_generator_id},
-        select:{
-          data_name:true,
-          description:true,
-          telefax:true,
-          website:true,
-          address:true,
-          email:true,
-          telephone:true,
-          country:true,
-          city:true,
-          zip_code:true,
-          // for child
-          category_id:true,
-        }
-      })
-      return {
-        'name':actor.data_name,
-        'description':actor.description,
-        'telefax':actor.telefax,
-        'website':actor.website,
-        'address':actor.address,
-        'email':actor.email,
-        'telephone':actor.telephone,
-        'country':actor.country,
-        'city':actor.city,
-        'zip_code':actor.zip_code,
-      }
-    },
-    async owner(parent) {
-      const actor = await prisma.actors.findFirst({
-        where:{id : parent.process_documentation_data_set_owner_id},
-        select:{
-          data_name:true,
-          description:true,
-          telefax:true,
-          website:true,
-          address:true,
-          email:true,
-          telephone:true,
-          country:true,
-          city:true,
-          zip_code:true,
-          // for child
-          category_id:true,
-        }
-      })
-      return {
-        'name':actor.data_name,
-        'description':actor.description,
-        'telefax':actor.telefax,
-        'website':actor.website,
-        'address':actor.address,
-        'email':actor.email,
-        'telephone':actor.telephone,
-        'country':actor.country,
-        'city':actor.city,
-        'zip_code':actor.zip_code,
-      }
-    },
-    async reviewer(parent) {
-      const actor = await prisma.actors.findFirst({
-        where:{id : parent.process_documentation_reviewer_id},
-        select:{
-          data_name:true,
-          description:true,
-          telefax:true,
-          website:true,
-          address:true,
-          email:true,
-          telephone:true,
-          country:true,
-          city:true,
-          zip_code:true,
-          // for child
-          category_id:true,
-        }
-      })
-      return {
-        'name':actor.data_name,
-        'description':actor.description,
-        'telefax':actor.telefax,
-        'website':actor.website,
-        'address':actor.address,
-        'email':actor.email,
-        'telephone':actor.telephone,
-        'country':actor.country,
-        'city':actor.city,
-        'zip_code':actor.zip_code,
-      }
-    },
+    async documentor(parent) {return actor(parent.process_documentation_data_documentor_id)},
+    async generator(parent) {return actor(parent.process_documentation_data_generator_id)},
+    async owner(parent) {return actor(parent.process_documentation_data_set_owner_id)},
+    async reviewer(parent) {return actor(parent.process_documentation_reviewer_id)},
   },
   DataQualitySystem:{
     async source(parent){

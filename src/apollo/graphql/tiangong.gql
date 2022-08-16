@@ -15,13 +15,13 @@ type Flow {
 }
 
 type Process{
-  process_name:String
-  process_description:String
-  process_type:String
-  process_allocation_method_default:String
-  process_allocation_factors:String
-  process_exchanged_flows:String
-  process_parameters:String
+  name:String
+  description:String
+  type:String
+  allocation_method:String
+  allocation_factors:String
+  exchanged_flows:String
+  parameters:String
   process_locations:Location
   database:String
   process_valid_period:Time
