@@ -22,9 +22,9 @@ type Process{
   allocation_factors:String
   exchanged_flows:String
   parameters:String
-  process_locations:Location
+  locations:Location
   database:String
-  process_valid_period:Time
+  valid_period:Time
   categories:Category
   documentations:Documentation
   data_descriptions:DataDescription
@@ -155,8 +155,7 @@ type LCIA_NW_Sets{
 
 type Query {
   Flows: [Flow]
+  FlowByID:[Flow]
   Processes: [Process]
-  Categories:[Category]
   FlowProperties:[FlowProperty]
-  Documentations:[Documentation]
 }

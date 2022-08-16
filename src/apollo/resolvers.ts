@@ -1,8 +1,5 @@
 import { PrismaClient, Prisma, categories } from '@prisma/client';
 
-
-
-
 const prisma = new PrismaClient();
 interface Context {prisma: PrismaClient};
 const context: Context = {prisma: prisma,};
@@ -143,7 +140,6 @@ async function process() {
   });
   return Iresult_process;
 }
-
 interface Iresult_flow_property {
   name:string;
   description:string;
@@ -184,13 +180,6 @@ async function flow_property() {
   });
   return resultJson_flow_property;
 }
-
-interface Iresult_categories{
-  category_name:string,
-  category_subclass:string,
-  category_class:string[],
-}
-
 async function category(category_id:string) {
   // Data form database
   const categories = await prisma.categories.findFirst({
@@ -203,7 +192,6 @@ async function category(category_id:string) {
   category_class_list?.forEach(item=>{bufferArray.push(item?.toString());})
   return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
 }
-
 interface Iresult_actors{
   name:string
   description:string
@@ -271,7 +259,7 @@ const resolvers = {
   },
   Process:{
     async categories(parent){return category(parent.category_id)},
-    async process_locations(parent){
+    async locations(parent){
       const location = await prisma.locations.findFirst({ 
         // where: {data_name: parent.location_name??'Null'}, 
       where: {id: parent.location_id??'Null'}, 
@@ -280,7 +268,7 @@ const resolvers = {
       return {'name':location.data_name,'code':location.code,'description':location.description,'longitude':location.longitude,'latitude':location.latitude,'geometry_type':location.geometry_type,'geometry_geometries':JSON.stringify(location.geometry_geometries)}
       // return {'name':location.data_name}
     },
-    async process_valid_period(parent){
+    async valid_period(parent){
       const period = await prisma.processes.findFirst({
         where:{id:parent.id??'Null'},
         select:{
