@@ -7,17 +7,18 @@ const prisma = new PrismaClient();
 interface Context {prisma: PrismaClient};
 const context: Context = {prisma: prisma,};
 interface Iresult_flow {
-  flow_name:string;
-  flow_description:string;
-  flow_cas: string;
-  flow_synonyms:string;
-  flow_type:string;
+  name:string;
+  description:string;
+  cas_number: string;
+  formula:string;
+  synonyms:string;
+  type:string;
   database:string;
+  properties:string;
   flow_category_id:string;
-  flow_category_name:string;
-  flow_properties:string;
+  // flow_category_name:string;
   location_id:string;
-  location_name:string;
+  // location_name:string;
 }
 async function flow() {
   // Data form database
@@ -26,6 +27,7 @@ async function flow() {
     select: {
       data_name:true,
       description:true,
+      formula:true,
       cas: true,
       synonyms:true,
       flow_type:true,
@@ -43,79 +45,35 @@ async function flow() {
   flows?.forEach(item => {
     // Defining json item
     let result: Iresult_flow = {
-      flow_name:'',
-      flow_description: '',
-      flow_cas:'',
-      flow_synonyms:'',
-      flow_type:'',
+      name:'',
+      description: '',
+      cas_number:'',
+      formula:'',
+      synonyms:'',
+      type:'',
       database:'',
       flow_category_id:'',
-      flow_category_name:'',
-      flow_properties:'',
+      // flow_category_name:'',
+      properties:'',
       location_id:'',
-      location_name:'',
+      // location_name:'',
     };
-    result.flow_name = item?.data_name;
-    result.flow_cas = item?.cas;
-    result.flow_description = item?.description;
-    result.flow_synonyms = item?.synonyms;
-    result.flow_type = item?.flow_type;
+    result.name = item?.data_name;
+    result.formula = item?.formula;
+    result.cas_number = item?.cas;
+    result.description = item?.description;
+    result.synonyms = item?.synonyms;
+    result.type = item?.flow_type;
     result.database = item?.database;
     result.flow_category_id = item?.category_id;
-    result.flow_category_name = item?.category_name;
-    result.flow_properties = JSON.stringify(item?.flow_properties)
+    // result.flow_category_name = item?.category_name;
+    result.properties = JSON.stringify(item?.flow_properties)
     result.location_id = item?.location_id;
-    result.location_name = item?.location_name;
+    // result.location_name = item?.location_name;
     resultJson_flow.push(result);
   });
   return resultJson_flow;
 }
-
-// interface Iresult_categories {
-//   // id:string;
-//   category_id:string;
-//   category_name:string;
-//   category_subclass:string;
-//   category_class:string[];
-//   // id:string;
-// }
-// async function Categories() {
-//   // Data form database
-//   const categories = await prisma.categories.findMany({
-//     // where: {
-//     //   id:category_id,
-//     // },
-//     select: {
-//       id:true,
-//       data_name:true,
-//       category_name:true,
-//       category_path:true,
-//     }
-//   });
-//   // Defining the new json array schema
-//   let resultJson_categories: any [] = [];
-//   // Fill in the data
-//   categories?.forEach(item => {
-//     // Defining json item
-//     let result: Iresult_categories = {
-//       category_name: '',
-//       category_subclass: '',
-//       category_class: [''],
-//       // category_id: '',
-//     };
-//     result.category_name = item?.data_name;
-//     result.category_subclass = item?.category_name;
-//     // result.category_id = item?.id;
-//     const category_class_list = item?.category_path as Prisma.JsonArray;
-//     let bufferArray: string[] = [];
-//     category_class_list?.forEach(item => {
-//       bufferArray.push(item?.toString());
-//     });
-//     result.category_class = bufferArray;
-//     resultJson_categories.push(result);
-//   });
-//   return resultJson_categories;
-// }
 
 interface Iresult_process {
   id:string;
@@ -186,26 +144,76 @@ async function process() {
   return Iresult_process;
 }
 
+interface Iresult_flow_property {
+  name:string;
+  description:string;
+  type:string;
+  category_id:string;
+  unit_group_id:string;
+}
+async function flow_property() {
+  // Data form database
+  const flows = await prisma.flow_properties.findMany({
+    take:88,
+    select: {
+      data_name:true,
+      description:true,
+      flow_property_type: true,
+      category_id:true,
+      unit_group_id:true
+    },
+  });
+  // Defining the new json array schema
+  let resultJson_flow_property: any[] = [];
+  // Fill in the data
+  flows?.forEach(item => {
+    // Defining json item
+    let result: Iresult_flow_property = {
+      name:'',
+      description: '',
+      type:'',
+      category_id:'',
+      unit_group_id:'',
+    };
+    result.name = item?.data_name;
+    result.description = item?.description;
+    result.type = item?.flow_property_type;
+    result.category_id = item?.category_id;
+    result.unit_group_id = item?.unit_group_id;
+    resultJson_flow_property.push(result);
+  });
+  return resultJson_flow_property;
+}
 
+interface Iresult_categories{
+  category_name:string,
+  category_subclass:string,
+  category_class:string[],
+}
+
+async function category(category_id:string) {
+  // Data form database
+  const categories = await prisma.categories.findFirst({
+    where:{id:category_id  },
+    select:{data_name:true,category_name:true,category_path:true,},
+  });
+  // Defining the new json array schema
+  const category_class_list  = categories.category_path as Prisma.JsonArray ;
+  let bufferArray: string []=[];
+  category_class_list?.forEach(item=>{bufferArray.push(item?.toString());})
+  return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
+}
 
 const resolvers = {
   Query: {
     Flows() {return flow()},
-    Processes() {return process()}
+    Processes() {return process()},
+    FlowProperties(){return flow_property()}
     // Locations() {return Location()}
   },
   Flow:{
-    async flow_categories(parent){
-      // const categories = await prisma.categories.findFirst({ where: {data_name: parent.flow_category_name,category_type:'Flow'}, select: {category_name: true,category_path:true} })
-      const categories = await prisma.categories.findFirst({ where: { id: parent.category_id??'Null'}, select:{data_name:true,category_name: true,category_path:true}})
-      const category_class_list  = categories.category_path as Prisma.JsonArray ;
-      let bufferArray: string []=[];
-      category_class_list?.forEach(item=>{
-        bufferArray.push(item?.toString());
-      })
-      return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
-    },
-    async flow_locations(parent){
+    async categories(parent){return category(parent.category_id)},
+    async locations(parent){
       const location = await prisma.locations.findFirst({ 
         // where: {data_name: parent.location_name??'Null'}, 
       where: {id: parent.location_id??'Null'}, 
@@ -216,15 +224,7 @@ const resolvers = {
     },
   },
   Process:{
-    async process_categories(parent){
-      const categories = await prisma.categories.findFirst({ where: { id: parent.category_id??'Null'}, select:{data_name:true,category_name: true,category_path:true}})
-      const category_class_list  = categories.category_path as Prisma.JsonArray ;
-      let bufferArray: string []=[];
-      category_class_list?.forEach(item=>{
-        bufferArray.push(item?.toString());
-      })
-      return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
-    },
+    async categories(parent){return category(parent.category_id)},
     async process_locations(parent){
       const location = await prisma.locations.findFirst({ 
         // where: {data_name: parent.location_name??'Null'}, 
@@ -309,30 +309,205 @@ const resolvers = {
         }
     },
   },
-//   Publication{
-//     async (parent){
-//     const source = await prisma.sources.findFirst({
-//       where:{
-//         id:parent.process_documentation_publication_id
-//       },
-//       select:{
-//         data_name:true,
-//         description:true,
-//         year:true,
-//         text_reference:true,
-//         url:true,
-//         category_id:true,
-//       },
-//       })
-//       return {
-//       'name' : source.data_name,
-//       'description':source.description,
-//       'year':source.year,
-//       'text_reference':source.text_reference,
-//       'url':source.url,
-//       }
-//   },
-// },
+  Documentation:{
+    async publication(parent) {
+        const source = await prisma.sources.findFirst({
+          where:{
+            id:parent.process_documentation_publication_id
+          },
+          select:{
+            data_name:true,
+            description:true,
+            year:true,
+            text_reference:true,
+            url:true,
+            // for child
+            category_id:true,
+          },
+          })
+          return {
+          'name' : source.data_name,
+          'description':source.description,
+          'year':source.year,
+          'text_reference':source.text_reference,
+          'url':source.url,
+          }
+    },
+    async documentor(parent) {
+      const actor = await prisma.actors.findFirst({
+        where:{id : parent.process_documentation_data_documentor_id},
+        select:{
+          data_name:true,
+          description:true,
+          telefax:true,
+          website:true,
+          address:true,
+          email:true,
+          telephone:true,
+          country:true,
+          city:true,
+          zip_code:true,
+          // for child
+          category_id:true,
+        }
+      })
+      return {
+        'name':actor.data_name,
+        'description':actor.description,
+        'telefax':actor.telefax,
+        'website':actor.website,
+        'address':actor.address,
+        'email':actor.email,
+        'telephone':actor.telephone,
+        'country':actor.country,
+        'city':actor.city,
+        'zip_code':actor.zip_code,
+      }
+    },
+    async generator(parent) {
+      const actor = await prisma.actors.findFirst({
+        where:{id : parent.process_documentation_data_generator_id},
+        select:{
+          data_name:true,
+          description:true,
+          telefax:true,
+          website:true,
+          address:true,
+          email:true,
+          telephone:true,
+          country:true,
+          city:true,
+          zip_code:true,
+          // for child
+          category_id:true,
+        }
+      })
+      return {
+        'name':actor.data_name,
+        'description':actor.description,
+        'telefax':actor.telefax,
+        'website':actor.website,
+        'address':actor.address,
+        'email':actor.email,
+        'telephone':actor.telephone,
+        'country':actor.country,
+        'city':actor.city,
+        'zip_code':actor.zip_code,
+      }
+    },
+    async owner(parent) {
+      const actor = await prisma.actors.findFirst({
+        where:{id : parent.process_documentation_data_set_owner_id},
+        select:{
+          data_name:true,
+          description:true,
+          telefax:true,
+          website:true,
+          address:true,
+          email:true,
+          telephone:true,
+          country:true,
+          city:true,
+          zip_code:true,
+          // for child
+          category_id:true,
+        }
+      })
+      return {
+        'name':actor.data_name,
+        'description':actor.description,
+        'telefax':actor.telefax,
+        'website':actor.website,
+        'address':actor.address,
+        'email':actor.email,
+        'telephone':actor.telephone,
+        'country':actor.country,
+        'city':actor.city,
+        'zip_code':actor.zip_code,
+      }
+    },
+    async reviewer(parent) {
+      const actor = await prisma.actors.findFirst({
+        where:{id : parent.process_documentation_reviewer_id},
+        select:{
+          data_name:true,
+          description:true,
+          telefax:true,
+          website:true,
+          address:true,
+          email:true,
+          telephone:true,
+          country:true,
+          city:true,
+          zip_code:true,
+          // for child
+          category_id:true,
+        }
+      })
+      return {
+        'name':actor.data_name,
+        'description':actor.description,
+        'telefax':actor.telefax,
+        'website':actor.website,
+        'address':actor.address,
+        'email':actor.email,
+        'telephone':actor.telephone,
+        'country':actor.country,
+        'city':actor.city,
+        'zip_code':actor.zip_code,
+      }
+    },
+  },
+  DataQualitySystem:{
+    async source(parent){
+      const source = await prisma.sources.findFirst({
+        where:{id : parent.source_id},
+        select:{
+          data_name:true,
+          description:true,
+          year:true,
+          text_reference:true,
+          url:true,
+          category_id:true,
+        },
+      })
+      return{
+        'name':source.data_name,
+        'description':source.description,
+        'year':source.year,
+        'text_reference':source.text_reference,
+        'url':source.url,
+      }
+    }
+  },
+  Source:{
+    async categories(parent){return category(parent.category_id)},
+  },
+  Actor:{
+    async categories(parent){return category(parent.category_id)},
+  },
+  FlowProperty:{
+    async categories(parent){return category(parent.category_id)},
+    async unit(parent){
+      const unit_groups = await prisma.unit_groups.findFirst({
+        where:{id:parent.unit_group_id},
+        select:{
+          units:true,
+          data_name:true,
+          description:true,
+          category_id:true,
+        }
+      })
+      return {
+        'unit':JSON.stringify(unit_groups?.units),
+        'group_name':unit_groups.data_name,
+        'group_description':unit_groups.description
+      }
+    }
+  },
+  UnitGroup:{
+    async categories(parent){return category(parent.category_id)},
+  }
 }
 
 export default resolvers;
