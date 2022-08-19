@@ -131,26 +131,27 @@ type UnitGroup{
   categories:Category
 }
 
-
-type LCIA_Methods{
-  LCIA_method_name:String
-  LCIA_method_description:String
-  LCIA_method_impact_categories:String
-  LCIA_method_nw_sets:String
+type LCIA_Method{
+  name:String
+  description:String
+  category:Category
+  #impact_categories_id:[String]
+  impact_categories:String
+  normalization_and_weighting_sets:String
 }
 
-type LCIA_Categories{
-  LCIA_category_name:String
-  LCIA_category_description:String
-  LCIA_category_reference_unit_name:String
-  LCIA_category_impact_factors:String
+type LCIA_Impact_Category{
+  name:String
+  description:String
+  reference_unit_name:String
+  impact_factors:String
 }
 
-type LCIA_NW_Sets{
-  LCIA_NW_Set_name:String
-  LCIA_NW_Set_description:String
-  LCIA_NW_Set_factor:String
-  LCIA_NW_Set_weighted_score_unit:String
+type LCIA_Normalization_and_Weighting_Set{
+  name:String
+  description:String
+  factor:String
+  weighted_score_unit:String
 }
 
 type Query {

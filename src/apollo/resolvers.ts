@@ -20,7 +20,7 @@ interface Iresult_flow {
 async function flow() {
   // Data form database
   const flows = await prisma.flows.findMany({
-    take:88,
+    // take:88,
     select: {
       data_name:true,
       description:true,
@@ -89,7 +89,7 @@ interface Iresult_process {
 async function process() {
   // Data form database
   const process = await prisma.processes.findMany({
-    take:88,
+    // take:88,
     select: {
       id:true,
       category_id:true,
@@ -180,6 +180,76 @@ async function flow_property() {
   });
   return resultJson_flow_property;
 }
+
+interface Iresult_lcia_method {
+  name:string;
+  description:string;
+  impact_categories_id:string[];
+  normalization_and_weighting_sets:string;
+}
+async function lcia_method(){
+  const method = await prisma.lcia_methods.findMany({
+    take: 10,
+    select:{
+      data_name:true,
+      description:true,
+      impact_categories:true,
+      nw_sets:true,
+      // for child
+      category_id:true
+    }
+  })
+  let resultJson_lcia_method: any[] = [];
+  method?.forEach(item => {
+    let result: Iresult_lcia_method = {
+      name:'',
+      description:'',
+      impact_categories_id:[''],
+      normalization_and_weighting_sets:'',
+    };
+    result.name = item?.data_name;
+    result.description = item?.description;
+    result.impact_categories_id = JSON.parse(JSON.stringify(item?.impact_categories)).map((i)=>i['@id']);
+    result.normalization_and_weighting_sets = JSON.stringify(item?.nw_sets);
+    resultJson_lcia_method.push(result);
+  });
+  return resultJson_lcia_method;
+}
+
+// interface Iresult_lcia_impact_category {
+//   name:string;
+//   description:string;
+//   reference_unit_name:string;
+//   impact_factors:string;
+// }
+
+// async function lcia_impact_category(impact_categories_id:any[]) {
+//   const impact_categories = await prisma.lcia_categories.findMany({
+//     select:{
+//       data_name:true,
+//       id:true,
+//       description:true,
+//       reference_unit_name:true,
+//       impact_factors:true
+//     }
+//     })
+//     let ResultJson_lcia_impact_category : any[] = [];
+//     let result : Iresult_lcia_impact_category = {
+//       name:'',
+//       description:'',
+//       reference_unit_name:'',
+//       impact_factors:'',
+//     };
+//     impact_categories_id?.forEach(item=>{
+//       let Result_lcia_impact_category = impact_categories.filter(impact_categories => impact_categories.id === item);
+//       result.name = Result_lcia_impact_category['data_name'],
+//       ResultJson_lcia_impact_category.push(Result_lcia_impact_category)
+//     })
+//     return ResultJson_lcia_impact_category;
+// }
+
+  
+
 async function category(category_id:string) {
   // Data form database
   const categories = await prisma.categories.findFirst({
@@ -191,18 +261,6 @@ async function category(category_id:string) {
   let bufferArray: string []=[];
   category_class_list?.forEach(item=>{bufferArray.push(item?.toString());})
   return {'category_name':categories.data_name,'category_subclass':categories.category_name,'category_class':bufferArray}
-}
-interface Iresult_actors{
-  name:string
-  description:string
-  telefax:string
-  website:string
-  address:string
-  email:string
-  telephone:string
-  country:string
-  city:string
-  zip_code:string
 }
 
 async function actor(actor_id:string) {
@@ -238,36 +296,66 @@ async function actor(actor_id:string) {
   }
 }
 
+async function source(source_id:string){
+  const source = await prisma.sources.findFirst({
+    where:{id:source_id},
+    select:{
+      data_name:true,
+      description:true,
+      year:true,
+      text_reference:true,
+      url:true,
+      // for child
+      category_id:true,
+    }
+  })
+  return {
+    'name' : source.data_name,
+    'description':source.description,
+    'year':source.year,
+    'text_reference':source.text_reference,
+    'url':source.url,
+    }
+}
+
+async function location(location_id:string){
+  const location = await prisma.locations.findFirst({ 
+  where: {id: location_id}, 
+  select:{
+    data_name:true,
+    description:true,
+    longitude:true,
+    latitude:true,
+    code:true,
+    geometry_type:true,
+    geometry_geometries:true}
+  })
+  return {
+    'name':location.data_name,
+    'code':location.code,
+    'description':location.description,
+    'longitude':location.longitude,
+    'latitude':location.latitude,
+    'geometry_type':location.geometry_type,
+    'geometry_geometries':JSON.stringify(location.geometry_geometries)
+  }
+}
+
 const resolvers = {
   Query: {
     Flows() {return flow()},
     Processes() {return process()},
-    FlowProperties(){return flow_property()}
+    FlowProperties(){return flow_property()},
+    // LCIAMethods() {return lcia_method()}
     // Locations() {return Location()}
   },
   Flow:{
     async categories(parent){return category(parent.category_id)},
-    async locations(parent){
-      const location = await prisma.locations.findFirst({ 
-        // where: {data_name: parent.location_name??'Null'}, 
-      where: {id: parent.location_id??'Null'}, 
-      select:{data_name:true,description:true,longitude:true,latitude:true,code:true,geometry_type:true,geometry_geometries:true}})
-      // select:{data_name:true}})
-      return {'name':location.data_name,'code':location.code,'description':location.description,'longitude':location.longitude,'latitude':location.latitude,'geometry_type':location.geometry_type,'geometry_geometries':JSON.stringify(location.geometry_geometries)}
-      // return {'name':location.data_name}
-    },
+    async locations(parent){ return location(parent.location_id)},
   },
   Process:{
     async categories(parent){return category(parent.category_id)},
-    async locations(parent){
-      const location = await prisma.locations.findFirst({ 
-        // where: {data_name: parent.location_name??'Null'}, 
-      where: {id: parent.location_id??'Null'}, 
-      select:{data_name:true,description:true,longitude:true,latitude:true,code:true,geometry_type:true,geometry_geometries:true}})
-      // select:{data_name:true}})
-      return {'name':location.data_name,'code':location.code,'description':location.description,'longitude':location.longitude,'latitude':location.latitude,'geometry_type':location.geometry_type,'geometry_geometries':JSON.stringify(location.geometry_geometries)}
-      // return {'name':location.data_name}
-    },
+    async locations(parent){ return location(parent.location_id)},
     async valid_period(parent){
       const period = await prisma.processes.findFirst({
         where:{id:parent.id??'Null'},
@@ -344,55 +432,14 @@ const resolvers = {
     },
   },
   Documentation:{
-    async publication(parent) {
-        const source = await prisma.sources.findFirst({
-          where:{
-            id:parent.process_documentation_publication_id
-          },
-          select:{
-            data_name:true,
-            description:true,
-            year:true,
-            text_reference:true,
-            url:true,
-            // for child
-            category_id:true,
-          },
-          })
-          return {
-          'name' : source.data_name,
-          'description':source.description,
-          'year':source.year,
-          'text_reference':source.text_reference,
-          'url':source.url,
-          }
-    },
+    async publication(parent) {return source(parent.process_documentation_publication_id)},
     async documentor(parent) {return actor(parent.process_documentation_data_documentor_id)},
     async generator(parent) {return actor(parent.process_documentation_data_generator_id)},
     async owner(parent) {return actor(parent.process_documentation_data_set_owner_id)},
     async reviewer(parent) {return actor(parent.process_documentation_reviewer_id)},
   },
   DataQualitySystem:{
-    async source(parent){
-      const source = await prisma.sources.findFirst({
-        where:{id : parent.source_id},
-        select:{
-          data_name:true,
-          description:true,
-          year:true,
-          text_reference:true,
-          url:true,
-          category_id:true,
-        },
-      })
-      return{
-        'name':source.data_name,
-        'description':source.description,
-        'year':source.year,
-        'text_reference':source.text_reference,
-        'url':source.url,
-      }
-    }
+    async source(parent){return source(parent.source_id)},
   },
   Source:{
     async categories(parent){return category(parent.category_id)},
@@ -421,7 +468,10 @@ const resolvers = {
   },
   UnitGroup:{
     async categories(parent){return category(parent.category_id)},
-  }
+  },
+  // LCIA_Method:{
+  //   async category(parent){return category(parent.category_id)},
+  // }
 }
 
 export default resolvers;
