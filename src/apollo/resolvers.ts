@@ -20,7 +20,7 @@ interface Iresult_flow {
 async function flow() {
   // Data form database
   const flows = await prisma.flows.findMany({
-    // take:88,
+    take:88,
     select: {
       data_name:true,
       description:true,
@@ -89,7 +89,7 @@ interface Iresult_process {
 async function process() {
   // Data form database
   const process = await prisma.processes.findMany({
-    // take:88,
+    take:88,
     select: {
       id:true,
       category_id:true,
@@ -184,12 +184,13 @@ async function flow_property() {
 interface Iresult_lcia_method {
   name:string;
   description:string;
-  impact_categories_id:string[];
+  category_id:string;
+  impact_categories_id:[];
   normalization_and_weighting_sets:string;
 }
 async function lcia_method(){
   const method = await prisma.lcia_methods.findMany({
-    take: 10,
+    take:2,
     select:{
       data_name:true,
       description:true,
@@ -204,56 +205,79 @@ async function lcia_method(){
     let result: Iresult_lcia_method = {
       name:'',
       description:'',
-      impact_categories_id:[''],
+      impact_categories_id:[],
       normalization_and_weighting_sets:'',
+      category_id : '',
     };
     result.name = item?.data_name;
     result.description = item?.description;
-    result.impact_categories_id = JSON.parse(JSON.stringify(item?.impact_categories)).map((i)=>i['@id']);
+    result.category_id = item?.category_id;
+    // console.log(result.category_id)
+    // result.impact_categories_id = JSON.parse(JSON.stringify(item?.impact_categories)).map((i)=>{
+    //   return JSON.stringify(lcia_impact_category(i['@id']).toString())
+    // })
+    result.impact_categories_id = JSON.parse(JSON.stringify(item?.impact_categories)).map((i)=>i['@id'])
+    // result.impact_categories_id = JSON.parse(JSON.stringify(item?.impact_categories)).map((i)=> {lcia_impact_category(i['@id'])})
     result.normalization_and_weighting_sets = JSON.stringify(item?.nw_sets);
     resultJson_lcia_method.push(result);
   });
   return resultJson_lcia_method;
 }
 
-// interface Iresult_lcia_impact_category {
-//   name:string;
-//   description:string;
-//   reference_unit_name:string;
-//   impact_factors:string;
+interface Iresult_lcia_impact_category {
+  name:string;
+  description:string;
+  reference_unit_name:string;
+  impact_factors:string;
+  id:string;
+}
+async function lcia_impact_category(ids:any[]) {
+  // console.log(typeof ids)
+  console.log('!')
+  const impact_categories = await prisma.lcia_categories.findMany({
+    take:100,
+    select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true,id:true},
+  })
+  let resultJson_impact_categories : any[] = [];
+  // console.log('......')
+  console.log('!!')
+  impact_categories?.forEach(item => {
+    if (ids.includes(item?.id)){
+      let result: Iresult_lcia_impact_category = {
+        name:'',
+        description:'',
+        reference_unit_name:'',
+        impact_factors:'',
+        id:'',
+      };
+      result.name = item?.data_name,
+      result.description = item?.description,
+      result.reference_unit_name = item?.reference_unit_name,
+      result.impact_factors = JSON.stringify(item?.impact_factors),
+      result.id = item?.id,
+      resultJson_impact_categories.push(result)
+    }
+  });
+  // console.log(result2)
+  // console.log(resultJson_impact_categories)
+  console.log('!!!')
+  return resultJson_impact_categories;
+  // return result2;
+}
+// async function lcia_impact_category(impact_category_id:string) {
+//   const impact_categories = await prisma.lcia_categories.findFirst({
+//     // where: {id:'047cf749-ce0e-4ac2-9139-c2be4473964a'},
+//     where: {id:impact_category_id},
+//     select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true},
+//   })
+//   return {'name':impact_categories.data_name,'description':impact_categories.description,'reference_unit_name':impact_categories.reference_unit_name,'impact_factors':JSON.stringify(impact_categories.impact_factors)};
 // }
 
-// async function lcia_impact_category(impact_categories_id:any[]) {
-//   const impact_categories = await prisma.lcia_categories.findMany({
-//     select:{
-//       data_name:true,
-//       id:true,
-//       description:true,
-//       reference_unit_name:true,
-//       impact_factors:true
-//     }
-//     })
-//     let ResultJson_lcia_impact_category : any[] = [];
-//     let result : Iresult_lcia_impact_category = {
-//       name:'',
-//       description:'',
-//       reference_unit_name:'',
-//       impact_factors:'',
-//     };
-//     impact_categories_id?.forEach(item=>{
-//       let Result_lcia_impact_category = impact_categories.filter(impact_categories => impact_categories.id === item);
-//       result.name = Result_lcia_impact_category['data_name'],
-//       ResultJson_lcia_impact_category.push(Result_lcia_impact_category)
-//     })
-//     return ResultJson_lcia_impact_category;
-// }
-
-  
 
 async function category(category_id:string) {
   // Data form database
   const categories = await prisma.categories.findFirst({
-    where:{id:category_id  },
+    where:{id:category_id},
     select:{data_name:true,category_name:true,category_path:true,},
   });
   // Defining the new json array schema
@@ -346,7 +370,9 @@ const resolvers = {
     Flows() {return flow()},
     Processes() {return process()},
     FlowProperties(){return flow_property()},
-    // LCIAMethods() {return lcia_method()}
+    LCIAMethods() {return lcia_method()},
+    // test() {return lcia_impact_category()}
+    // LCIA_Impact_Categories() {return lcia_impact_category()}
     // Locations() {return Location()}
   },
   Flow:{
@@ -469,9 +495,12 @@ const resolvers = {
   UnitGroup:{
     async categories(parent){return category(parent.category_id)},
   },
-  // LCIA_Method:{
-  //   async category(parent){return category(parent.category_id)},
-  // }
+  LCIA_Method:{
+    async category(parent){return category(parent.category_id)},
+    async impact_categories(parent){
+      var array:any[] = parent.impact_categories_id;
+      return lcia_impact_category(array)}
+  }
 }
 
 export default resolvers;

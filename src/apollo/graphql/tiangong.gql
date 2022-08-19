@@ -135,12 +135,13 @@ type LCIA_Method{
   name:String
   description:String
   category:Category
-  #impact_categories_id:[String]
-  impact_categories:String
+  impact_categories_id:[String]
+  impact_categories:[LCIA_Impact_Category]
   normalization_and_weighting_sets:String
 }
 
 type LCIA_Impact_Category{
+  id:String
   name:String
   description:String
   reference_unit_name:String
@@ -159,4 +160,6 @@ type Query {
   FlowByID:[Flow]
   Processes: [Process]
   FlowProperties:[FlowProperty]
+  LCIAMethods:[LCIA_Method]
+  LCIA_Impact_Categories:LCIA_Impact_Category
 }
