@@ -190,7 +190,7 @@ interface Iresult_lcia_method {
 }
 async function lcia_method(){
   const method = await prisma.lcia_methods.findMany({
-    take:2,
+    take:10,
     select:{
       data_name:true,
       description:true,
@@ -233,14 +233,14 @@ interface Iresult_lcia_impact_category {
 }
 async function lcia_impact_category(ids:any[]) {
   // console.log(typeof ids)
-  console.log('!')
+  // console.log('!')
   const impact_categories = await prisma.lcia_categories.findMany({
-    take:100,
+    // take:10,
     select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true,id:true},
   })
   let resultJson_impact_categories : any[] = [];
   // console.log('......')
-  console.log('!!')
+  // console.log('!!')
   impact_categories?.forEach(item => {
     if (ids.includes(item?.id)){
       let result: Iresult_lcia_impact_category = {
@@ -260,19 +260,10 @@ async function lcia_impact_category(ids:any[]) {
   });
   // console.log(result2)
   // console.log(resultJson_impact_categories)
-  console.log('!!!')
+  // console.log('!!!')
   return resultJson_impact_categories;
   // return result2;
 }
-// async function lcia_impact_category(impact_category_id:string) {
-//   const impact_categories = await prisma.lcia_categories.findFirst({
-//     // where: {id:'047cf749-ce0e-4ac2-9139-c2be4473964a'},
-//     where: {id:impact_category_id},
-//     select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true},
-//   })
-//   return {'name':impact_categories.data_name,'description':impact_categories.description,'reference_unit_name':impact_categories.reference_unit_name,'impact_factors':JSON.stringify(impact_categories.impact_factors)};
-// }
-
 
 async function category(category_id:string) {
   // Data form database

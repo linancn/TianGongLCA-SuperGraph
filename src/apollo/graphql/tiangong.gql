@@ -157,7 +157,7 @@ type LCIA_Normalization_and_Weighting_Set{
 
 type Query {
   Flows: [Flow]
-  FlowByID:[Flow]
+  FlowByName(name:String):[Flow]
   Processes: [Process]
   FlowProperties:[FlowProperty]
   LCIAMethods:[LCIA_Method]
