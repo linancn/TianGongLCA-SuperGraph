@@ -72,6 +72,79 @@ async function flow() {
   return resultJson_flow;
 }
 
+interface Iresult_flowbyname {
+  name:string;
+  description:string;
+  cas_number: string;
+  formula:string;
+  synonyms:string;
+  type:string;
+  database:string;
+  properties:string;
+  flow_category_id:string;
+  // flow_category_name:string;
+  location_id:string;
+  // location_name:string;
+}
+async function flowbyname(flowname) {
+  // Data form database
+  const flowsbyname = await prisma.flows.findMany({
+    where: {
+      data_name:{
+        contains:flowname.name,
+        }
+      },
+    select: {
+      data_name:true,
+      description:true,
+      formula:true,
+      cas: true,
+      synonyms:true,
+      flow_type:true,
+      database:true,
+      category_id:true,
+      category_name:true,
+      flow_properties:true,
+      location_id:true,
+      location_name:true,
+    },
+  });
+  // Defining the new json array schema
+  let Iresult_flowbyname: any[] = [];
+  // Fill in the data
+  flowsbyname?.forEach(item => {
+    // Defining json item
+    let result: Iresult_flowbyname = {
+      name:'',
+      description: '',
+      cas_number:'',
+      formula:'',
+      synonyms:'',
+      type:'',
+      database:'',
+      flow_category_id:'',
+      // flow_category_name:'',
+      properties:'',
+      location_id:'',
+      // location_name:'',
+    };
+    result.name = item?.data_name;
+    result.formula = item?.formula;
+    result.cas_number = item?.cas;
+    result.description = item?.description;
+    result.synonyms = item?.synonyms;
+    result.type = item?.flow_type;
+    result.database = item?.database;
+    result.flow_category_id = item?.category_id;
+    // result.flow_category_name = item?.category_name;
+    result.properties = JSON.stringify(item?.flow_properties)
+    result.location_id = item?.location_id;
+    // result.location_name = item?.location_name;
+    Iresult_flowbyname.push(result);
+  });
+  return Iresult_flowbyname;
+}
+
 interface Iresult_process {
   id:string;
   category_id:string;
@@ -229,40 +302,34 @@ interface Iresult_lcia_impact_category {
   description:string;
   reference_unit_name:string;
   impact_factors:string;
-  id:string;
+  // id:string;
 }
 async function lcia_impact_category(ids:any[]) {
   // console.log(typeof ids)
   // console.log('!')
   const impact_categories = await prisma.lcia_categories.findMany({
-    // take:10,
-    select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true,id:true},
+    select:{data_name:true,description:true,reference_unit_name:true,impact_factors:true},
+    where: {id:{in:ids}},
   })
   let resultJson_impact_categories : any[] = [];
-  // console.log('......')
-  // console.log('!!')
   impact_categories?.forEach(item => {
-    if (ids.includes(item?.id)){
-      let result: Iresult_lcia_impact_category = {
-        name:'',
-        description:'',
-        reference_unit_name:'',
-        impact_factors:'',
-        id:'',
-      };
-      result.name = item?.data_name,
-      result.description = item?.description,
-      result.reference_unit_name = item?.reference_unit_name,
-      result.impact_factors = JSON.stringify(item?.impact_factors),
-      result.id = item?.id,
-      resultJson_impact_categories.push(result)
-    }
+    // if (ids.includes(item?.id)){
+    let result: Iresult_lcia_impact_category = {
+      name:'',
+      description:'',
+      reference_unit_name:'',
+      impact_factors:'',
+      // id:'',
+    };
+    result.name = item?.data_name,
+    result.description = item?.description,
+    result.reference_unit_name = item?.reference_unit_name,
+    result.impact_factors = JSON.stringify(item?.impact_factors),
+    // result.id = item?.id,
+    resultJson_impact_categories.push(result)
+    // }
   });
-  // console.log(result2)
-  // console.log(resultJson_impact_categories)
-  // console.log('!!!')
   return resultJson_impact_categories;
-  // return result2;
 }
 
 async function category(category_id:string) {
@@ -362,6 +429,7 @@ const resolvers = {
     Processes() {return process()},
     FlowProperties(){return flow_property()},
     LCIAMethods() {return lcia_method()},
+    FlowByName(args) {return flowbyname(args)}
     // test() {return lcia_impact_category()}
     // LCIA_Impact_Categories() {return lcia_impact_category()}
     // Locations() {return Location()}

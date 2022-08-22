@@ -141,7 +141,7 @@ type LCIA_Method{
 }
 
 type LCIA_Impact_Category{
-  id:String
+  #id:String
   name:String
   description:String
   reference_unit_name:String
@@ -157,7 +157,7 @@ type LCIA_Normalization_and_Weighting_Set{
 
 type Query {
   Flows: [Flow]
-  FlowByName(name:String):[Flow]
+  FlowByName(name:String!):[Flow]
   Processes: [Process]
   FlowProperties:[FlowProperty]
   LCIAMethods:[LCIA_Method]
