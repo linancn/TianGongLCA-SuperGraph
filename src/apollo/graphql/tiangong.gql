@@ -7,9 +7,11 @@ type Flow {
   cas_number: String
   type: String
   database:String
+  #conversion_factor:Float
   #flow_category_id:String
   #flow_category_name:String
-  properties:String
+  flow_properties:[String]
+  #properties:String
   categories:Category
   locations:Location
 }
@@ -159,6 +161,7 @@ type Query {
   Flows: [Flow]
   FlowByName(name:String!):[Flow]
   Processes: [Process]
+  ProcessByName(name:String!):[Process]
   FlowProperties:[FlowProperty]
   LCIAMethods:[LCIA_Method]
   LCIA_Impact_Categories:LCIA_Impact_Category
