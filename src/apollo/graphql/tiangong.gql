@@ -11,6 +11,7 @@ type Flow {
   #flow_category_id:String
   #flow_category_name:String
   flow_properties:[String]
+  properties:[FlowProperty]
   #properties:String
   categories:Category
   locations:Location
@@ -44,6 +45,7 @@ type FlowProperty{
   name:String
   description:String
   type:String
+  conversion_factor:String
   categories:Category
   unit:UnitGroup
 }
@@ -137,7 +139,7 @@ type LCIA_Method{
   name:String
   description:String
   category:Category
-  impact_categories_id:[String]
+  #impact_categories_id:[String]
   impact_categories:[LCIA_Impact_Category]
   normalization_and_weighting_sets:String
 }
@@ -162,7 +164,7 @@ type Query {
   FlowByName(name:String!):[Flow]
   Processes: [Process]
   ProcessByName(name:String!):[Process]
-  FlowProperties:[FlowProperty]
+  #FlowProperties:[FlowProperty]
   LCIAMethods:[LCIA_Method]
   LCIA_Impact_Categories:LCIA_Impact_Category
 }
