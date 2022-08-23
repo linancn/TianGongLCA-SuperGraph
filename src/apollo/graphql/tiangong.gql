@@ -10,7 +10,7 @@ type Flow {
   #conversion_factor:Float
   #flow_category_id:String
   #flow_category_name:String
-  flow_properties:[String]
+  #flow_properties:[String]
   properties:[FlowProperty]
   #properties:String
   categories:Category
@@ -24,6 +24,7 @@ type Process{
   allocation_method:String
   allocation_factors:String
   exchanged_flows:String
+  flows:[Flow]
   parameters:String
   locations:Location
   database:String
@@ -141,7 +142,7 @@ type LCIA_Method{
   category:Category
   #impact_categories_id:[String]
   impact_categories:[LCIA_Impact_Category]
-  normalization_and_weighting_sets:String
+  normalization_and_weighting_sets:[LCIA_Normalization_and_Weighting_Set]
 }
 
 type LCIA_Impact_Category{
@@ -155,7 +156,7 @@ type LCIA_Impact_Category{
 type LCIA_Normalization_and_Weighting_Set{
   name:String
   description:String
-  factor:String
+  impact_factors:String
   weighted_score_unit:String
 }
 

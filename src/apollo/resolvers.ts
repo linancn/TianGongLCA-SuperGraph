@@ -270,41 +270,42 @@ interface Iresult_flow_property {
   unit_group_id:string;
   conversion_factor:string;
 }
-async function flow_property() {
-  // Data form database
-  const flows = await prisma.flow_properties.findMany({
-    take:88,
-    select: {
-      data_name:true,
-      description:true,
-      flow_property_type: true,
-      category_id:true,
-      unit_group_id:true
-    },
-  });
-  // Defining the new json array schema
-  let resultJson_flow_property: any[] = [];
-  // Fill in the data
-  flows?.forEach(item => {
-    // Defining json item
-    let result: Iresult_flow_property = {
-      name:'',
-      description: '',
-      type:'',
-      category_id:'',
-      unit_group_id:'',
-      conversion_factor:'',
-    };
-    result.name = item?.data_name;
-    result.description = item?.description;
-    result.type = item?.flow_property_type;
-    result.category_id = item?.category_id;
-    result.unit_group_id = item?.unit_group_id;
-    result.conversion_factor = 'NaN';
-    resultJson_flow_property.push(result);
-  });
-  return resultJson_flow_property;
-}
+// Fetch all flow properties
+// async function flow_property() {
+//   // Data form database
+//   const flows = await prisma.flow_properties.findMany({
+//     take:88,
+//     select: {
+//       data_name:true,
+//       description:true,
+//       flow_property_type: true,
+//       category_id:true,
+//       unit_group_id:true
+//     },
+//   });
+//   // Defining the new json array schema
+//   let resultJson_flow_property: any[] = [];
+//   // Fill in the data
+//   flows?.forEach(item => {
+//     // Defining json item
+//     let result: Iresult_flow_property = {
+//       name:'',
+//       description: '',
+//       type:'',
+//       category_id:'',
+//       unit_group_id:'',
+//       conversion_factor:'',
+//     };
+//     result.name = item?.data_name;
+//     result.description = item?.description;
+//     result.type = item?.flow_property_type;
+//     result.category_id = item?.category_id;
+//     result.unit_group_id = item?.unit_group_id;
+//     result.conversion_factor = 'NaN';
+//     resultJson_flow_property.push(result);
+//   });
+//   return resultJson_flow_property;
+// }
 
 async function flow_property_by_id(flow_properties_json) {
   return (flow_properties_json?.map(async (i)=>{
