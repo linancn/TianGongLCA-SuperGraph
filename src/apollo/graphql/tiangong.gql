@@ -6,7 +6,7 @@ type Flow {
   formula: String
   cas_number: String
   type: String
-  database:String
+  database:Database
   #conversion_factor:Float
   #flow_category_id:String
   #flow_category_name:String
@@ -15,6 +15,10 @@ type Flow {
   #properties:String
   categories:Category
   locations:Location
+}
+
+type Database{
+  name:String
 }
 
 type Process{
@@ -27,7 +31,7 @@ type Process{
   flows:[Flow]
   parameters:String
   locations:Location
-  database:String
+  database:Database
   valid_period:Time
   categories:Category
   documentations:Documentation

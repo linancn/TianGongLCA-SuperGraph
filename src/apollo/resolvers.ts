@@ -511,6 +511,7 @@ const resolvers = {
     async categories(parent){return category(parent.category_id)},
     async locations(parent){return location(parent.location_id)},
     async properties(parent){return flow_property_by_id(parent.flow_properties)},
+    async database(parent){return parent.database},
   },
   FlowProperty:{
     async categories(parent){return category(parent.category_id)},
@@ -532,6 +533,7 @@ const resolvers = {
     }
   },
   Process:{
+    async database(parent){return parent.database},
     async categories(parent){return category(parent.category_id)},
     async locations(parent){ return location(parent.location_id)},
     async valid_period(parent){
