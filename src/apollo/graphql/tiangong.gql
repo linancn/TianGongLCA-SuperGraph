@@ -6,170 +6,169 @@ type Flow {
   formula: String
   cas_number: String
   type: String
-  database:Database
+  database: Database
   #conversion_factor:Float
   #flow_category_id:String
   #flow_category_name:String
   #flow_properties:[String]
-  properties:[FlowProperty]
+  properties: [FlowProperty]
   #properties:String
-  categories:Category
-  locations:Location
+  categories: Category
+  locations: Location
 }
 
-type Database{
-  name:String
+type Database {
+  name: String
 }
 
-type Process{
-  name:String
-  description:String
-  type:String
-  allocation_method:String
-  allocation_factors:String
-  exchanged_flows:String
-  flows:[Flow]
-  parameters:String
-  locations:Location
-  database:Database
-  valid_period:Time
-  categories:Category
-  documentations:Documentation
-  data_descriptions:DataDescription
-  data_quality_systems:DataQualitySystem
+type Process {
+  name: String
+  description: String
+  type: String
+  allocation_method: String
+  allocation_factors: String
+  exchanged_flows: String
+  flows: [Flow]
+  parameters: String
+  locations: Location
+  database: Database
+  valid_period: Time
+  categories: Category
+  documentations: Documentation
+  data_descriptions: DataDescription
+  data_quality_systems: DataQualitySystem
 }
-type DataDescription{
-  collection:String
-  selection:String
-  treatment:String
-  sampling:String
-  completeness:String
-}
-
-type FlowProperty{
-  name:String
-  description:String
-  type:String
-  conversion_factor:String
-  categories:Category
-  unit:UnitGroup
+type DataDescription {
+  collection: String
+  selection: String
+  treatment: String
+  sampling: String
+  completeness: String
 }
 
-type Time{
-  time_from:[String]
-  time_until:[String]
+type FlowProperty {
+  name: String
+  description: String
+  type: String
+  conversion_factor: String
+  categories: Category
+  unit: UnitGroup
 }
 
-type Category{
+type Time {
+  time_from: [String]
+  time_until: [String]
+}
+
+type Category {
   #category_id:String
-  category_name:String
-  category_subclass:String
-  category_class:[String]
+  category_name: String
+  category_subclass: String
+  category_class: [String]
 }
 
-type Location{
-  name:String
-  code:String
-  description:String
-  longitude:Float
-  latitude:Float
-  geometry_type:String
-  geometry_geometries:String
+type Location {
+  name: String
+  code: String
+  description: String
+  longitude: Float
+  latitude: Float
+  geometry_type: String
+  geometry_geometries: String
 }
 
-type Documentation{
-  time:String
-  technology:String
-  geography:String
-  project:String
-  inventory_method:String
+type Documentation {
+  time: String
+  technology: String
+  geography: String
+  project: String
+  inventory_method: String
 
-  modeling_constants:String
-  intended_applications:String
-  restrictions:String
+  modeling_constants: String
+  intended_applications: String
+  restrictions: String
 
-  copyright:Boolean
-  creation_date:String
-  
-  review_details:String
-  sources:String
+  copyright: Boolean
+  creation_date: String
 
-  publication:Source
-  documentor:Actor
-  generator:Actor
-  reviewer:Actor
-  owner:Actor
+  review_details: String
+  sources: String
+
+  publication: Source
+  documentor: Actor
+  generator: Actor
+  reviewer: Actor
+  owner: Actor
 }
 
-
-type Source{
-  name:String
-  description:String
-  year:String
-  text_reference:String
-  url:String
-  categories:Category
+type Source {
+  name: String
+  description: String
+  year: String
+  text_reference: String
+  url: String
+  categories: Category
 }
 
-type DataQualitySystem{
-  name:String
-  description:String
-  has_uncertainty:Boolean
-  indicators:String
-  source:Source
+type DataQualitySystem {
+  name: String
+  description: String
+  has_uncertainty: Boolean
+  indicators: String
+  source: Source
 }
 
-type Actor{
-  name:String
-  description:String
-  telefax:String
-  website:String
-  address:String
-  email:String
-  telephone:String
-  country:String
-  city:String
-  zip_code:String
-  categories:Category
+type Actor {
+  name: String
+  description: String
+  telefax: String
+  website: String
+  address: String
+  email: String
+  telephone: String
+  country: String
+  city: String
+  zip_code: String
+  categories: Category
 }
 
-type UnitGroup{
-  unit:String
-  group_name:String
-  group_description:String
-  categories:Category
+type UnitGroup {
+  unit: String
+  group_name: String
+  group_description: String
+  categories: Category
 }
 
-type LCIA_Method{
-  name:String
-  description:String
-  category:Category
+type LCIA_Method {
+  name: String
+  description: String
+  category: Category
   #impact_categories_id:[String]
-  impact_categories:[LCIA_Impact_Category]
-  normalization_and_weighting_sets:[LCIA_Normalization_and_Weighting_Set]
+  impact_categories: [LCIA_Impact_Category]
+  normalization_and_weighting_sets: [LCIA_Normalization_and_Weighting_Set]
 }
 
-type LCIA_Impact_Category{
+type LCIA_Impact_Category {
   #id:String
-  name:String
-  description:String
-  reference_unit_name:String
-  impact_factors:String
+  name: String
+  description: String
+  reference_unit_name: String
+  impact_factors: String
 }
 
-type LCIA_Normalization_and_Weighting_Set{
-  name:String
-  description:String
-  impact_factors:String
-  weighted_score_unit:String
+type LCIA_Normalization_and_Weighting_Set {
+  name: String
+  description: String
+  impact_factors: String
+  weighted_score_unit: String
 }
 
 type Query {
   Flows: [Flow]
-  FlowByName(name:String!):[Flow]
+  FlowByName(name: String!): [Flow]
   Processes: [Process]
-  ProcessByName(name:String!):[Process]
+  ProcessByName(name: String!): [Process]
   #FlowProperties:[FlowProperty]
-  LCIAMethods:[LCIA_Method]
-  LCIA_Impact_Categories:LCIA_Impact_Category
+  LCIAMethods: [LCIA_Method]
+  LCIA_Impact_Categories: LCIA_Impact_Category
 }
