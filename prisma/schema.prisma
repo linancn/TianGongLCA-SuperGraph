@@ -118,23 +118,18 @@ model dq_systems {
 }
 
 model flow_properties {
-  data_name                String?   @db.VarChar(2048)
-  version                  String?   @db.VarChar(255)
-  tags                     String?   @db.VarChar(255)
-  library                  String?   @db.VarChar(255)
+  data_name                String? @db.VarChar(2048)
   description              String?
-  id                       String    @db.Uuid
-  last_change              DateTime? @db.Timestamptz(0)
-  flow_property_type       String?   @db.VarChar(255)
-  category_id              String?   @db.VarChar(255)
-  category_name            String?   @db.VarChar(255)
+  id                       String  @db.Uuid
+  flow_property_type       String? @db.VarChar(255)
+  category_id              String? @db.VarChar(255)
+  category_name            String? @db.VarChar(255)
   category_path            Json?
-  category_type            String?   @db.VarChar(255)
-  unit_group_id            String?   @db.VarChar(255)
-  unit_group_name          String?   @db.VarChar(255)
+  category_type            String? @db.VarChar(255)
+  unit_group_id            String? @db.VarChar(255)
+  unit_group_name          String? @db.VarChar(255)
   unit_group_category_path Json?
-  database                 String?   @db.VarChar(255)
-  serial_number            Int       @id @default(autoincrement())
+  serial_number            Int     @id @default(autoincrement())
 }
 
 model flows {
@@ -286,4 +281,15 @@ model unit_groups {
   default_flow_property_category_path Json?
   database                            String? @db.VarChar(255)
   serial_number                       Int     @id @default(autoincrement())
+}
+
+model units {
+  id                String   @db.Uuid
+  data_name         String?  @db.VarChar(2048)
+  description       String?
+  conversion_factor Float?
+  synonyms          String?
+  reference_unit    Boolean?
+  unit_groups_id    String?
+  serial_number     Int      @id @default(autoincrement())
 }
