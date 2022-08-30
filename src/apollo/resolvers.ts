@@ -38,11 +38,11 @@ async function flow() {
     },
   });
   // Defining the new json array schema
-  let resultJson_flow: any[] = [];
+  const resultJson_flow: any[] = [];
   // Fill in the data
   flows?.forEach(item => {
     // Defining json item
-    let result: Iresult_flow = {
+    const result: Iresult_flow = {
       name: '',
       description: '',
       cas_number: '',
@@ -64,7 +64,7 @@ async function flow() {
     result.type = item?.flow_type;
     result.database = item?.database;
     result.flow_category_id = item?.category_id;
-    let bufferArray: any[] = [];
+    const bufferArray: any[] = [];
     JSON.parse(JSON.stringify(item?.flow_properties)).map(i => {
       bufferArray.push(JSON.stringify({ flow_property: i['flowProperty']['@id']?.toString(), conversion_factor: Number(i['conversionFactor']) }));
     });
@@ -95,11 +95,11 @@ async function flowbyname(flowname: string) {
     },
   });
   // Defining the new json array schema
-  let IresultJson_flow: any[] = [];
+  const IresultJson_flow: any[] = [];
   // Fill in the data
   flowsbyname?.forEach(item => {
     // Defining json item
-    let result: Iresult_flow = {
+    const result: Iresult_flow = {
       name: '',
       description: '',
       cas_number: '',
@@ -123,7 +123,7 @@ async function flowbyname(flowname: string) {
     result.database = item?.database;
     result.flow_category_id = item?.category_id;
     // result.flow_category_name = item?.category_name;
-    let bufferArray: any[] = [];
+    const bufferArray: any[] = [];
     JSON.parse(JSON.stringify(item?.flow_properties)).map(i => {
       bufferArray.push(
         JSON.stringify({ flow_property_id: i['flowProperty']['@id']?.toString(), conversion_factor: i['conversionFactor'].toString() }),
@@ -171,11 +171,11 @@ async function process() {
     },
   });
   // Defining the new json array schema
-  let Iresult_process: any[] = [];
+  const Iresult_process: any[] = [];
   // Fill in the data
   process?.forEach(item => {
     // Defining json item
-    let result: Iresult_process = {
+    const result: Iresult_process = {
       id: '',
       category_id: '',
       location_id: '',
@@ -230,11 +230,11 @@ async function processbyname(processname: string) {
     },
   });
   // Defining the new json array schema
-  let Iresult_process: any[] = [];
+  const Iresult_process: any[] = [];
   // Fill in the data
   processbyname?.forEach(item => {
     // Defining json item
-    let result: Iresult_process = {
+    const result: Iresult_process = {
       id: '',
       category_id: '',
       location_id: '',
@@ -321,7 +321,7 @@ async function flow_property_by_id(flow_properties_json) {
       },
       where: { id: JSON.parse(i).flow_property_id },
     });
-    let result: Iresult_flow_property = {
+    const result: Iresult_flow_property = {
       name: '',
       description: '',
       type: '',
@@ -358,9 +358,9 @@ async function lcia_method() {
       category_id: true,
     },
   });
-  let resultJson_lcia_method: any[] = [];
+  const resultJson_lcia_method: any[] = [];
   method?.forEach(item => {
-    let result: Iresult_lcia_method = {
+    const result: Iresult_lcia_method = {
       name: '',
       description: '',
       impact_categories_id: [],
@@ -388,10 +388,10 @@ async function lcia_impact_category_by_id(ids: any[]) {
     select: { data_name: true, description: true, reference_unit_name: true, impact_factors: true },
     where: { id: { in: ids } },
   });
-  let resultJson_impact_categories: any[] = [];
+  const resultJson_impact_categories: any[] = [];
   impact_categories?.forEach(item => {
     // if (ids.includes(item?.id)){
-    let result: Iresult_lcia_impact_category = {
+    const result: Iresult_lcia_impact_category = {
       name: '',
       description: '',
       reference_unit_name: '',
@@ -417,7 +417,7 @@ async function category(category_id: string) {
   });
   // Defining the new json array schema
   const category_class_list = categories.category_path as Prisma.JsonArray;
-  let bufferArray: string[] = [];
+  const bufferArray: string[] = [];
   category_class_list?.forEach(item => {
     bufferArray.push(item?.toString());
   });
@@ -692,7 +692,7 @@ const resolvers = {
       return category(parent.category_id);
     },
     async impact_categories(parent) {
-      var array: any[] = parent.impact_categories_id;
+      const array: any[] = parent.impact_categories_id;
       return lcia_impact_category_by_id(array);
     },
   },
