@@ -137,6 +137,10 @@ async function flowbyname(flowname: string) {
   return IresultJson_flow;
 }
 
+// async function flowbyid (flowid : string){
+
+// }
+
 interface Iresult_process {
   id: string;
   category_id: string;
@@ -150,6 +154,9 @@ interface Iresult_process {
   exchanged_flows: string;
   parameters: string;
   database: string;
+  version: string;
+  last_change: string;
+  flows: [];
 }
 async function process() {
   // Data form database
@@ -168,6 +175,8 @@ async function process() {
       exchanges: true,
       parameters: true,
       database: true,
+      version: true,
+      last_change: true,
     },
   });
   // Defining the new json array schema
@@ -188,6 +197,9 @@ async function process() {
       exchanged_flows: '',
       parameters: '',
       database: '',
+      version: '',
+      last_change: '',
+      flows: [],
     };
     result.id = item?.id;
     result.category_id = item?.category_id;
@@ -197,6 +209,8 @@ async function process() {
     result.description = item?.description;
     result.type = item?.process_type;
     result.database = item?.database;
+    result.version = item?.version;
+    result.last_change = JSON.stringify(item?.last_change);
     result.allocation_method = item?.default_allocation_method;
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
     result.exchanged_flows = JSON.stringify(item?.exchanges);
@@ -227,6 +241,8 @@ async function processbyname(processname: string) {
       exchanges: true,
       parameters: true,
       database: true,
+      version: true,
+      last_change: true,
     },
   });
   // Defining the new json array schema
@@ -247,6 +263,9 @@ async function processbyname(processname: string) {
       exchanged_flows: '',
       parameters: '',
       database: '',
+      version: '',
+      last_change: '',
+      flows: [],
     };
     result.id = item?.id;
     result.category_id = item?.category_id;
@@ -257,9 +276,16 @@ async function processbyname(processname: string) {
     result.type = item?.process_type;
     result.database = item?.database;
     result.allocation_method = item?.default_allocation_method;
+    result.database = item?.database;
+    result.version = item?.version;
+    result.last_change = JSON.stringify(item?.last_change);
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
     result.exchanged_flows = JSON.stringify(item?.exchanges);
     result.parameters = JSON.stringify(item?.parameters);
+    result.flows = JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
+      return JSON.stringify({flow_id:i['flow']['@id'], input: i['input'], amount: i['amount'], unit_id: i['unit']['@id'], flow_property_id: i['flowProperty']['@id']});
+    });
+    // console.log(result.flows_id);
     Iresult_process.push(result);
   });
   return Iresult_process;
@@ -531,9 +557,6 @@ const resolvers = {
     async properties(parent) {
       return flow_property_by_id(parent.flow_properties);
     },
-    async database(parent) {
-      return parent.database;
-    },
   },
   FlowProperty: {
     async categories(parent) {
@@ -543,22 +566,20 @@ const resolvers = {
       const unit_groups = await prisma.unit_groups.findFirst({
         where: { id: parent.unit_group_id },
         select: {
-          units: true,
           data_name: true,
           description: true,
           category_id: true,
         },
       });
       return {
-        unit: JSON.stringify(unit_groups?.units),
-        group_name: unit_groups.data_name,
-        group_description: unit_groups.description,
+        name: unit_groups.data_name,
+        description: unit_groups.description,
       };
     },
   },
   Process: {
     async database(parent) {
-      return parent.database;
+      return { name: parent?.database, version: parent?.version, last_change: parent?.last_change };
     },
     async categories(parent) {
       return category(parent.category_id);

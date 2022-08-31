@@ -1,24 +1,63 @@
-type Flow {
+interface Flows {
   name: String
   description: String
   synonyms: String
-  #infrastructure_flow: Boolean
   formula: String
   cas_number: String
   type: String
-  database: Database
-  #conversion_factor:Float
-  #flow_category_id:String
-  #flow_category_name:String
-  #flow_properties:[String]
   properties: [FlowProperty]
-  #properties:String
   categories: Category
   locations: Location
 }
 
+type Flow{
+  name: String
+  description: String
+  synonyms: String
+  formula: String
+  cas_number: String
+  type: String
+  properties: [FlowProperty]
+  categories: Category
+  locations: Location
+  unit: Unit
+}
+
+type Inflow implements Flows{
+  name: String
+  description: String
+  synonyms: String
+  formula: String
+  cas_number: String
+  type: String
+  properties: [FlowProperty]
+  categories: Category
+  locations: Location
+  unit: Unit
+  
+  amount: Float
+}
+
+type Outflow implements Flows{
+  name: String
+  description: String
+  synonyms: String
+  formula: String
+  cas_number: String
+  type: String
+  properties: [FlowProperty]
+  categories: Category
+  locations: Location
+  unit: Unit
+  
+  amount: Float
+}
+
+
 type Database {
   name: String
+  version:String
+  last_change: String
 }
 
 type Process {
@@ -28,7 +67,8 @@ type Process {
   allocation_method: String
   allocation_factors: String
   exchanged_flows: String
-  flows: [Flow]
+  #flows: [String]
+  flows: [Flows]
   parameters: String
   locations: Location
   database: Database
@@ -132,10 +172,18 @@ type Actor {
   categories: Category
 }
 
+type Unit {
+  name: String
+  description: String
+  synonyms: String
+  conversion_factor: Float
+  reference_unit:Boolean
+  unit_group: UnitGroup
+}
+
 type UnitGroup {
-  unit: String
-  group_name: String
-  group_description: String
+  name: String
+  description: String
   categories: Category
 }
 
@@ -168,6 +216,7 @@ type Query {
   FlowByName(name: String!): [Flow]
   Processes: [Process]
   ProcessByName(name: String!): [Process]
+  #ProcessByDatabase(database: String!, process:String!):[Process]
   #FlowProperties:[FlowProperty]
   LCIAMethods: [LCIA_Method]
   LCIA_Impact_Categories: LCIA_Impact_Category
