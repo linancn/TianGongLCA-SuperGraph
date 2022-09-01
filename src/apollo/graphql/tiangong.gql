@@ -22,8 +22,9 @@ type Process {
   name: String
   description: String
   type: String
-  allocation_method: String
-  allocation_factors: String
+  #allocations:[Allocation]
+  #allocation_method: String
+  #allocation_factors: String
   #exchanged_flows: String
   inflows: [Flow]
   outflows: [Flow]
@@ -36,6 +37,12 @@ type Process {
   data_descriptions: DataDescription
   data_quality_systems: DataQualitySystem
 }
+
+#type Allocation{
+#  factors:Flow
+#  method: String
+#}
+
 type DataDescription {
   collection: String
   selection: String
@@ -48,9 +55,9 @@ type FlowProperty {
   name: String
   description: String
   type: String
-  conversion_factor: String
+  #conversion_factor: String
   categories: Category
-  unit: UnitGroup
+  unit_group: UnitGroup
 }
 
 type Time {

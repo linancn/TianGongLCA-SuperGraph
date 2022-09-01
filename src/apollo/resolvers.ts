@@ -388,7 +388,7 @@ interface Iresult_flow_property {
   type: string;
   category_id: string;
   unit_group_id: string;
-  conversion_factor: string;
+  // conversion_factor: string;
 }
 
 async function flow_property_by_id(flow_properties_json) {
@@ -409,14 +409,14 @@ async function flow_property_by_id(flow_properties_json) {
       type: '',
       category_id: '',
       unit_group_id: '',
-      conversion_factor: '',
+      // conversion_factor: '',
     };
     result.name = properties?.data_name;
     result.description = properties?.description;
     result.type = properties?.flow_property_type;
     result.unit_group_id = properties?.unit_group_id;
     result.category_id = properties?.category_id;
-    result.conversion_factor = JSON.parse(i).conversion_factor;
+    // result.conversion_factor = JSON.parse(i).conversion_factor;
     return result;
   });
 }
@@ -643,7 +643,7 @@ const resolvers = {
     async categories(parent) {
       return category(parent.category_id);
     },
-    async unit(parent) {
+    async unit_group(parent) {
       const unit_groups = await prisma.unit_groups.findFirst({
         where: { id: parent.unit_group_id },
         select: {
