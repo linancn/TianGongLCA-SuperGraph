@@ -1,13 +1,6 @@
-interface Flows {
-  name: String
-  description: String
-  synonyms: String
-  formula: String
-  cas_number: String
-  type: String
-  properties: [FlowProperty]
-  categories: Category
-  locations: Location
+type Flows {
+  inflows:[Flow]
+  outflows:[Flow]
 }
 
 type Flow{
@@ -21,38 +14,8 @@ type Flow{
   categories: Category
   locations: Location
   unit: Unit
+  amount:Float
 }
-
-type Inflow implements Flows{
-  name: String
-  description: String
-  synonyms: String
-  formula: String
-  cas_number: String
-  type: String
-  properties: [FlowProperty]
-  categories: Category
-  locations: Location
-  unit: Unit
-  
-  amount: Float
-}
-
-type Outflow implements Flows{
-  name: String
-  description: String
-  synonyms: String
-  formula: String
-  cas_number: String
-  type: String
-  properties: [FlowProperty]
-  categories: Category
-  locations: Location
-  unit: Unit
-  
-  amount: Float
-}
-
 
 type Database {
   name: String
@@ -66,7 +29,7 @@ type Process {
   type: String
   allocation_method: String
   allocation_factors: String
-  exchanged_flows: String
+  #exchanged_flows: String
   #flows: [String]
   flows: [Flows]
   parameters: String

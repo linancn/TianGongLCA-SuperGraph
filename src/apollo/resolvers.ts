@@ -10,13 +10,9 @@ interface Iresult_flow {
   synonyms: string;
   type: string;
   database: string;
-  // properties:string;
   flow_category_id: string;
   flow_properties: any[];
   location_id: string;
-  // conversion_factor:string;
-  // conversion_factor:number;
-  // location_name:string;
 }
 async function flow() {
   // Data form database
@@ -137,9 +133,65 @@ async function flowbyname(flowname: string) {
   return IresultJson_flow;
 }
 
-// async function flowbyid (flowid : string){
-
-// }
+async function flowbyid(flowid: string) {
+  const flowbyid = await prisma.flows.findMany({
+    where: { id: { equals: flowid } },
+    select: {
+      data_name: true,
+      description: true,
+      formula: true,
+      cas: true,
+      synonyms: true,
+      flow_type: true,
+      database: true,
+      category_id: true,
+      category_name: true,
+      flow_properties: true,
+      location_id: true,
+      location_name: true,
+    },
+  });
+  const IresultJson_flow: any[] = [];
+  // Fill in the data
+  flowbyid?.forEach(item => {
+    // Defining json item
+    const result: Iresult_flow = {
+      name: '',
+      description: '',
+      cas_number: '',
+      formula: '',
+      synonyms: '',
+      type: '',
+      database: '',
+      flow_category_id: '',
+      // flow_category_name:'',
+      // properties:'',
+      location_id: '',
+      flow_properties: [],
+      // location_name:'',
+    };
+    result.name = item?.data_name;
+    result.formula = item?.formula;
+    result.cas_number = item?.cas;
+    result.description = item?.description;
+    result.synonyms = item?.synonyms;
+    result.type = item?.flow_type;
+    result.database = item?.database;
+    result.flow_category_id = item?.category_id;
+    // result.flow_category_name = item?.category_name;
+    const bufferArray: any[] = [];
+    JSON.parse(JSON.stringify(item?.flow_properties)).map(i => {
+      bufferArray.push(
+        JSON.stringify({ flow_property_id: i['flowProperty']['@id']?.toString(), conversion_factor: i['conversionFactor'].toString() }),
+      );
+    });
+    result.flow_properties = bufferArray;
+    result.location_id = item?.location_id;
+    // result.location_name = item?.location_name;
+    IresultJson_flow.push(result);
+  });
+  return IresultJson_flow;
+}
 
 interface Iresult_process {
   id: string;
@@ -151,12 +203,14 @@ interface Iresult_process {
   type: string;
   allocation_method: string;
   allocation_factors: string;
-  exchanged_flows: string;
+  // exchanged_flows: string;
   parameters: string;
   database: string;
   version: string;
   last_change: string;
-  flows: [];
+  // flows: any[];
+  inflows: any[];
+  outflows: any[];
 }
 async function process() {
   // Data form database
@@ -222,7 +276,6 @@ async function process() {
 async function processbyname(processname: string) {
   // Data form database
   const processbyname = await prisma.processes.findMany({
-    take: 88,
     where: {
       data_name: {
         contains: processname,
@@ -247,6 +300,8 @@ async function processbyname(processname: string) {
   });
   // Defining the new json array schema
   const Iresult_process: any[] = [];
+  const Iresult_inflows: any[] = [];
+  const Iresult_outflows: any[] = [];
   // Fill in the data
   processbyname?.forEach(item => {
     // Defining json item
@@ -260,12 +315,14 @@ async function processbyname(processname: string) {
       type: '',
       allocation_method: '',
       allocation_factors: '',
-      exchanged_flows: '',
+      // exchanged_flows: '',
       parameters: '',
       database: '',
       version: '',
       last_change: '',
-      flows: [],
+      // flows: [],
+      inflows: [],
+      outflows: [],
     };
     result.id = item?.id;
     result.category_id = item?.category_id;
@@ -280,12 +337,39 @@ async function processbyname(processname: string) {
     result.version = item?.version;
     result.last_change = JSON.stringify(item?.last_change);
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
-    result.exchanged_flows = JSON.stringify(item?.exchanges);
+    // result.exchanged_flows = JSON.stringify(item?.exchanges);
     result.parameters = JSON.stringify(item?.parameters);
-    result.flows = JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
-      return JSON.stringify({flow_id:i['flow']['@id'], input: i['input'], amount: i['amount'], unit_id: i['unit']['@id'], flow_property_id: i['flowProperty']['@id']});
+    JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
+      // result.flows.push(i['input'])
+      if (i['input'] == true) {
+        let bufferArray_inflows: string[] = JSON.parse(
+          JSON.stringify({
+            flow_id: i['flow']['@id'],
+            // input: i['input'],
+            amount: i['amount'],
+            unit_id: i['unit']['@id'],
+            flow_property_id: i['flowProperty']['@id'],
+          }),
+        );
+        Iresult_inflows.push(bufferArray_inflows);
+      } else if (i['input'] == false) {
+        let bufferArray_outflows: string[] = JSON.parse(
+          JSON.stringify({
+            flow_id: i['flow']['@id'],
+            // input: i['input'],
+            amount: i['amount'],
+            unit_id: i['unit']['@id'],
+            flow_property_id: i['flowProperty']['@id'],
+          }),
+        );
+        Iresult_outflows.push(bufferArray_outflows);
+      }
     });
-    // console.log(result.flows_id);
+    result.inflows = Iresult_inflows;
+    result.outflows = Iresult_outflows;
+    // console.log(result.flows);
+    // console.log(result.inflows);
+    // console.log(result.outflows);
     Iresult_process.push(result);
   });
   return Iresult_process;
@@ -298,42 +382,6 @@ interface Iresult_flow_property {
   unit_group_id: string;
   conversion_factor: string;
 }
-// Fetch all flow properties
-// async function flow_property() {
-//   // Data form database
-//   const flows = await prisma.flow_properties.findMany({
-//     take:88,
-//     select: {
-//       data_name:true,
-//       description:true,
-//       flow_property_type: true,
-//       category_id:true,
-//       unit_group_id:true
-//     },
-//   });
-//   // Defining the new json array schema
-//   let resultJson_flow_property: any[] = [];
-//   // Fill in the data
-//   flows?.forEach(item => {
-//     // Defining json item
-//     let result: Iresult_flow_property = {
-//       name:'',
-//       description: '',
-//       type:'',
-//       category_id:'',
-//       unit_group_id:'',
-//       conversion_factor:'',
-//     };
-//     result.name = item?.data_name;
-//     result.description = item?.description;
-//     result.type = item?.flow_property_type;
-//     result.category_id = item?.category_id;
-//     result.unit_group_id = item?.unit_group_id;
-//     result.conversion_factor = 'NaN';
-//     resultJson_flow_property.push(result);
-//   });
-//   return resultJson_flow_property;
-// }
 
 async function flow_property_by_id(flow_properties_json) {
   return flow_properties_json?.map(async i => {
@@ -547,6 +595,15 @@ const resolvers = {
       return processbyname(args.name);
     },
   },
+  Flows: {
+    async inflows(parent) {
+      // const inflows: any[] = parent.inflows
+      console.log(parent.inflows)
+    },
+    async outflows(parent) {
+
+    },
+  },
   Flow: {
     async categories(parent) {
       return category(parent.category_id);
@@ -670,6 +727,11 @@ const resolvers = {
         completeness: data_description.process_documentation_completeness_description,
       };
     },
+    async flows (parent){
+      const inflows: any[] = parent.inflows;
+      const outflows: any[] = parent.outflows;
+      console.log(parent.outflows)
+    }
   },
   Documentation: {
     async publication(parent) {
