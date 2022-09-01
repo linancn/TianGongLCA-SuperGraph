@@ -13,6 +13,8 @@ interface Iresult_flow {
   flow_category_id: string;
   flow_properties: any[];
   location_id: string;
+  amount: string;
+  unit_id: string;
 }
 async function flow() {
   // Data form database
@@ -104,11 +106,10 @@ async function flowbyname(flowname: string) {
       type: '',
       database: '',
       flow_category_id: '',
-      // flow_category_name:'',
-      // properties:'',
       location_id: '',
       flow_properties: [],
-      // location_name:'',
+      amount: '',
+      unit_id: '',
     };
     result.name = item?.data_name;
     result.formula = item?.formula;
@@ -127,34 +128,32 @@ async function flowbyname(flowname: string) {
     });
     result.flow_properties = bufferArray;
     result.location_id = item?.location_id;
+    // result.amount = Number();
     // result.location_name = item?.location_name;
     IresultJson_flow.push(result);
   });
   return IresultJson_flow;
 }
 
-async function flowbyid(flowid: string) {
-  const flowbyid = await prisma.flows.findMany({
-    where: { id: { equals: flowid } },
-    select: {
-      data_name: true,
-      description: true,
-      formula: true,
-      cas: true,
-      synonyms: true,
-      flow_type: true,
-      database: true,
-      category_id: true,
-      category_name: true,
-      flow_properties: true,
-      location_id: true,
-      location_name: true,
-    },
-  });
-  const IresultJson_flow: any[] = [];
-  // Fill in the data
-  flowbyid?.forEach(item => {
-    // Defining json item
+async function flowbyid(flows: []) {
+  return flows.map(async item => {
+    const flow = await prisma.flows.findFirst({
+      where: { id: item['flow_id'] },
+      select: {
+        data_name: true,
+        description: true,
+        formula: true,
+        cas: true,
+        synonyms: true,
+        flow_type: true,
+        database: true,
+        category_id: true,
+        category_name: true,
+        flow_properties: true,
+        location_id: true,
+        location_name: true,
+      },
+    });
     const result: Iresult_flow = {
       name: '',
       description: '',
@@ -164,33 +163,32 @@ async function flowbyid(flowid: string) {
       type: '',
       database: '',
       flow_category_id: '',
-      // flow_category_name:'',
-      // properties:'',
       location_id: '',
       flow_properties: [],
-      // location_name:'',
+      amount: '',
+      unit_id: '',
     };
-    result.name = item?.data_name;
-    result.formula = item?.formula;
-    result.cas_number = item?.cas;
-    result.description = item?.description;
-    result.synonyms = item?.synonyms;
-    result.type = item?.flow_type;
-    result.database = item?.database;
-    result.flow_category_id = item?.category_id;
+    result.name = flow?.data_name;
+    result.formula = flow?.formula;
+    result.cas_number = flow?.cas;
+    result.description = flow?.description;
+    result.synonyms = flow?.synonyms;
+    result.type = flow?.flow_type;
+    result.database = flow?.database;
+    result.flow_category_id = flow?.category_id;
     // result.flow_category_name = item?.category_name;
     const bufferArray: any[] = [];
-    JSON.parse(JSON.stringify(item?.flow_properties)).map(i => {
+    JSON.parse(JSON.stringify(flow?.flow_properties)).map(i => {
       bufferArray.push(
         JSON.stringify({ flow_property_id: i['flowProperty']['@id']?.toString(), conversion_factor: i['conversionFactor'].toString() }),
       );
     });
     result.flow_properties = bufferArray;
-    result.location_id = item?.location_id;
-    // result.location_name = item?.location_name;
-    IresultJson_flow.push(result);
+    result.location_id = flow?.location_id;
+    result.amount = item['amount'];
+    result.unit_id = item['unit_id'];
+    return result;
   });
-  return IresultJson_flow;
 }
 
 interface Iresult_process {
@@ -208,6 +206,7 @@ interface Iresult_process {
   database: string;
   version: string;
   last_change: string;
+  // flow:string[];
   // flows: any[];
   inflows: any[];
   outflows: any[];
@@ -248,12 +247,15 @@ async function process() {
       type: '',
       allocation_method: '',
       allocation_factors: '',
-      exchanged_flows: '',
+      // exchanged_flows: '',
       parameters: '',
       database: '',
       version: '',
       last_change: '',
-      flows: [],
+      // flow: [''],
+      inflows: [],
+      outflows: [],
+      // flows: []
     };
     result.id = item?.id;
     result.category_id = item?.category_id;
@@ -267,7 +269,7 @@ async function process() {
     result.last_change = JSON.stringify(item?.last_change);
     result.allocation_method = item?.default_allocation_method;
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
-    result.exchanged_flows = JSON.stringify(item?.exchanges);
+    // result.exchanged_flows = JSON.stringify(item?.exchanges);
     result.parameters = JSON.stringify(item?.parameters);
     Iresult_process.push(result);
   });
@@ -320,7 +322,6 @@ async function processbyname(processname: string) {
       database: '',
       version: '',
       last_change: '',
-      // flows: [],
       inflows: [],
       outflows: [],
     };
@@ -339,8 +340,15 @@ async function processbyname(processname: string) {
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
     // result.exchanged_flows = JSON.stringify(item?.exchanges);
     result.parameters = JSON.stringify(item?.parameters);
+    // result.flow = JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
+    //   return {
+    //       flow_id: i['flow']['@id'],
+    //       // input: i['input'],
+    //       amount: i['amount'],
+    //       unit_id: i['unit']['@id'],
+    //       flow_property_id: i['flowProperty']['@id'],
+    //     }})
     JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
-      // result.flows.push(i['input'])
       if (i['input'] == true) {
         let bufferArray_inflows: string[] = JSON.parse(
           JSON.stringify({
@@ -348,7 +356,7 @@ async function processbyname(processname: string) {
             // input: i['input'],
             amount: i['amount'],
             unit_id: i['unit']['@id'],
-            flow_property_id: i['flowProperty']['@id'],
+            // flow_property_id: i['flowProperty']['@id'],
           }),
         );
         Iresult_inflows.push(bufferArray_inflows);
@@ -359,7 +367,7 @@ async function processbyname(processname: string) {
             // input: i['input'],
             amount: i['amount'],
             unit_id: i['unit']['@id'],
-            flow_property_id: i['flowProperty']['@id'],
+            // flow_property_id: i['flowProperty']['@id'],
           }),
         );
         Iresult_outflows.push(bufferArray_outflows);
@@ -495,7 +503,7 @@ async function category(category_id: string) {
   category_class_list?.forEach(item => {
     bufferArray.push(item?.toString());
   });
-  return { category_name: categories.data_name, category_subclass: categories.category_name, category_class: bufferArray };
+  return { name: categories.data_name, subclass: categories.category_name, class: bufferArray };
 }
 
 async function actor(actor_id: string) {
@@ -577,6 +585,42 @@ async function location(location_id: string) {
   };
 }
 
+async function unit(unit_id: string) {
+  const unit = await prisma.units.findFirst({
+    where: { id: unit_id },
+    select: {
+      data_name: true,
+      description: true,
+      synonyms: true,
+      conversion_factor: true,
+      reference_unit: true,
+      unit_groups_id: true,
+    },
+  });
+  return {
+    name: unit.data_name,
+    description: unit.description,
+    synonyms: unit.synonyms,
+    conversion_factor: unit.conversion_factor,
+    reference_unit: unit.reference_unit,
+  };
+}
+
+async function unit_group(unit_group_id: string) {
+  const unit_group = await prisma.unit_groups.findFirst({
+    where: { id: unit_group_id },
+    select: {
+      data_name: true,
+      description: true,
+      category_id: true,
+    },
+  });
+  return {
+    name: unit_group.data_name,
+    description: unit_group.description,
+  };
+}
+
 const resolvers = {
   Query: {
     Flows() {
@@ -593,26 +637,6 @@ const resolvers = {
     },
     ProcessByName(__, args) {
       return processbyname(args.name);
-    },
-  },
-  Flows: {
-    async inflows(parent) {
-      // const inflows: any[] = parent.inflows
-      console.log(parent.inflows)
-    },
-    async outflows(parent) {
-
-    },
-  },
-  Flow: {
-    async categories(parent) {
-      return category(parent.category_id);
-    },
-    async locations(parent) {
-      return location(parent.location_id);
-    },
-    async properties(parent) {
-      return flow_property_by_id(parent.flow_properties);
     },
   },
   FlowProperty: {
@@ -727,11 +751,27 @@ const resolvers = {
         completeness: data_description.process_documentation_completeness_description,
       };
     },
-    async flows (parent){
-      const inflows: any[] = parent.inflows;
-      const outflows: any[] = parent.outflows;
-      console.log(parent.outflows)
-    }
+    async inflows(parent) {
+      return flowbyid(parent.inflows);
+    },
+    async outflows(parent) {
+      return flowbyid(parent.outflows);
+    },
+  },
+  Flow: {
+    async categories(parent) {
+      // console.log(parent.inflows)
+      return category(parent.category_id);
+    },
+    async locations(parent) {
+      return location(parent.location_id);
+    },
+    async properties(parent) {
+      return flow_property_by_id(parent.flow_properties);
+    },
+    async unit(parent) {
+      return unit(parent.unit_id)
+    },
   },
   Documentation: {
     async publication(parent) {
@@ -764,6 +804,11 @@ const resolvers = {
     async categories(parent) {
       return category(parent.category_id);
     },
+  },
+  Unit: {
+    async unit_group(parent) {
+      return unit_group(parent.unit_group_id)
+    }
   },
   UnitGroup: {
     async categories(parent) {

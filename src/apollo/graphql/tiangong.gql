@@ -1,8 +1,3 @@
-type Flows {
-  inflows:[Flow]
-  outflows:[Flow]
-}
-
 type Flow{
   name: String
   description: String
@@ -14,7 +9,7 @@ type Flow{
   categories: Category
   locations: Location
   unit: Unit
-  amount:Float
+  amount:String
 }
 
 type Database {
@@ -30,8 +25,8 @@ type Process {
   allocation_method: String
   allocation_factors: String
   #exchanged_flows: String
-  #flows: [String]
-  flows: [Flows]
+  inflows: [Flow]
+  outflows: [Flow]
   parameters: String
   locations: Location
   database: Database
@@ -65,9 +60,9 @@ type Time {
 
 type Category {
   #category_id:String
-  category_name: String
-  category_subclass: String
-  category_class: [String]
+  name: String
+  subclass: String
+  class: [String]
 }
 
 type Location {
