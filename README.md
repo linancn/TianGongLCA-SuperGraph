@@ -35,9 +35,16 @@ yarn test
 https://studio.apollographql.com/sandbox/explorer
 
 
-Debug Endpoint:
-```bash
+### Debug Endpoint:
 http://localhost:3000/graphql
+
+
+### Voyager Endpoint:
+http://localhost:3000/voyager
+
+### Checking Endpoint
+```bash
+npx diagnose-endpoint --endpoint=http://localhost:3000/graphql
 ```
 
 ### Checking duplicate graphql version

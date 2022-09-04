@@ -32,6 +32,7 @@ class App {
       resolvers,
       csrfPrevention: true,
       cache: 'bounded',
+      introspection: process.env.NODE_ENV !== 'production',
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer: this.httpServer })],
     });
 
