@@ -52,7 +52,8 @@ async function flow() {
       // properties:'',
       location_id: '',
       flow_properties: [],
-      // conversion_factor:NaN,
+      amount: '',
+      unit_id: '',
     };
     result.name = item?.data_name;
     result.formula = item?.formula;
@@ -350,7 +351,7 @@ async function processbyname(processname: string) {
     //     }})
     JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
       if (i['input'] == true) {
-        let bufferArray_inflows: string[] = JSON.parse(
+        const bufferArray_inflows: string[] = JSON.parse(
           JSON.stringify({
             flow_id: i['flow']['@id'],
             // input: i['input'],
@@ -361,7 +362,7 @@ async function processbyname(processname: string) {
         );
         Iresult_inflows.push(bufferArray_inflows);
       } else if (i['input'] == false) {
-        let bufferArray_outflows: string[] = JSON.parse(
+        const bufferArray_outflows: string[] = JSON.parse(
           JSON.stringify({
             flow_id: i['flow']['@id'],
             // input: i['input'],
@@ -770,7 +771,7 @@ const resolvers = {
       return flow_property_by_id(parent.flow_properties);
     },
     async unit(parent) {
-      return unit(parent.unit_id)
+      return unit(parent.unit_id);
     },
   },
   Documentation: {
@@ -807,8 +808,8 @@ const resolvers = {
   },
   Unit: {
     async unit_group(parent) {
-      return unit_group(parent.unit_group_id)
-    }
+      return unit_group(parent.unit_group_id);
+    },
   },
   UnitGroup: {
     async categories(parent) {
