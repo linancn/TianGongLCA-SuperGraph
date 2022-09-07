@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function Unit_Group(unit_group_id: string) {
+async function UnitGroup(unit_group_id: string) {
   const unit_group = await prisma.unit_groups.findFirst({
     where: { id: unit_group_id },
     select: {
@@ -17,4 +17,4 @@ async function Unit_Group(unit_group_id: string) {
   };
 }
 
-export default Unit_Group;
+export default UnitGroup;

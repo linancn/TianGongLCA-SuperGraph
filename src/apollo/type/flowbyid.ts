@@ -17,7 +17,7 @@ interface Iresult_flow {
   unit_id: string;
 }
 
-async function FlowbyId(flows: []) {
+async function flowbyid(flows: []) {
   return flows.map(async item => {
     const flow = await prisma.flows.findFirst({
       where: { id: item['flow_id'] },
@@ -73,4 +73,4 @@ async function FlowbyId(flows: []) {
   });
 }
 
-export default FlowbyId;
+export default flowbyid;
