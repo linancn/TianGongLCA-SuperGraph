@@ -12,8 +12,8 @@ async function UnitGroup(unit_group_id: string) {
     },
   });
   return {
-    name: unit_group.data_name,
-    description: unit_group.description,
+    name: unit_group?.data_name,
+    description: unit_group?.description,
   };
 }
 

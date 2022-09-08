@@ -22,9 +22,12 @@ interface Iresult_process {
   inflows: any[];
   outflows: any[];
 }
-async function ProcessbyName(processname: string) {
+async function ProcessbyName(processname: string, start: number, end: number) {
   // Data form database
+  console.log(start,end)
   const processbyname = await prisma.processes.findMany({
+    skip: start,
+    take: (end-start+1),
     where: {
       data_name: {
         contains: processname,

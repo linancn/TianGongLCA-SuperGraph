@@ -15,11 +15,11 @@ async function Unit(unit_id: string) {
     },
   });
   return {
-    name: unit.data_name,
-    description: unit.description,
-    synonyms: unit.synonyms,
-    conversion_factor: unit.conversion_factor,
-    reference_unit: unit.reference_unit,
+    name: unit?.data_name,
+    description: unit?.description,
+    synonyms: unit?.synonyms,
+    conversion_factor: unit?.conversion_factor,
+    reference_unit: unit?.reference_unit,
   };
 }
 

@@ -16,13 +16,13 @@ async function Location(location_id: string) {
     },
   });
   return {
-    name: location.data_name,
-    code: location.code,
-    description: location.description,
-    longitude: location.longitude,
-    latitude: location.latitude,
-    geometry_type: location.geometry_type,
-    geometry_geometries: JSON.stringify(location.geometry_geometries),
+    name: location?.data_name,
+    code: location?.code,
+    description: location?.description,
+    longitude: location?.longitude,
+    latitude: location?.latitude,
+    geometry_type: location?.geometry_type,
+    geometry_geometries: JSON.stringify(location?.geometry_geometries),
   };
 }
 

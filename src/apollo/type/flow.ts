@@ -16,10 +16,11 @@ interface Iresult_flow {
   amount: string;
   unit_id: string;
 }
-async function Flow() {
+async function Flow(start:number,end:number) {
   // Data form database
   const flows = await prisma.flows.findMany({
-    take: 200,
+    skip: start,
+    take: (end-start+1),
     select: {
       data_name: true,
       description: true,
@@ -33,6 +34,9 @@ async function Flow() {
       flow_properties: true,
       location_id: true,
       location_name: true,
+    },
+    orderBy: {
+      data_name: 'asc',
     },
   });
   // Defining the new json array schema

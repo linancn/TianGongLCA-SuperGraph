@@ -177,10 +177,10 @@ type LCIA_Normalization_and_Weighting_Set {
 }
 
 type Query {
-  Flows: [Flow]
+  Flows(start: Int, end: Int): [Flow]
   FlowByName(name: String!): [Flow]
-  Processes: [Process]
-  ProcessByName(name: String!): [Process]
+  Processes(start: Int, end: Int): [Process]
+  ProcessByName(name: String!, start: Int, end: Int): [Process]
   #ProcessByDatabase(database: String!, process:String!):[Process]
   #FlowProperties:[FlowProperty]
   LCIAMethods: [LCIA_Method]

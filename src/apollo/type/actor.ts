@@ -22,16 +22,16 @@ async function Actor(actor_id: string) {
     },
   });
   return {
-    name: actor.data_name,
-    description: actor.description,
-    telefax: actor.telefax,
-    website: actor.website,
-    address: actor.address,
-    email: actor.email,
-    telephone: actor.telephone,
-    country: actor.country,
-    city: actor.city,
-    zip_code: actor.zip_code,
+    name: actor?.data_name,
+    description: actor?.description,
+    telefax: actor?.telefax,
+    website: actor?.website,
+    address: actor?.address,
+    email: actor?.email,
+    telephone: actor?.telephone,
+    country: actor?.country,
+    city: actor?.city,
+    zip_code: actor?.zip_code,
   };
 }
 

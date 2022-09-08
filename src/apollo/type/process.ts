@@ -22,10 +22,11 @@ interface Iresult_process {
   inflows: any[];
   outflows: any[];
 }
-async function Process() {
+async function Process(start: number, end: number) {
   // Data form database
   const process = await prisma.processes.findMany({
-    take: 88,
+    skip: start,
+    take: end - start + 1,
     select: {
       id: true,
       category_id: true,
@@ -45,6 +46,8 @@ async function Process() {
   });
   // Defining the new json array schema
   const Iresult_process: any[] = [];
+  const Iresult_inflows: any[] = [];
+  const Iresult_outflows: any[] = [];
   // Fill in the data
   process?.forEach(item => {
     // Defining json item
@@ -76,12 +79,35 @@ async function Process() {
     result.description = item?.description;
     result.type = item?.process_type;
     result.database = item?.database;
+    result.allocation_method = item?.default_allocation_method;
+    result.database = item?.database;
     result.version = item?.version;
     result.last_change = JSON.stringify(item?.last_change);
-    result.allocation_method = item?.default_allocation_method;
     result.allocation_factors = JSON.stringify(item?.allocation_factors);
-    // result.exchanged_flows = JSON.stringify(item?.exchanges);
     result.parameters = JSON.stringify(item?.parameters);
+    JSON.parse(JSON.stringify(item?.exchanges)).map(i => {
+      if (i['input'] == true) {
+        const bufferArray_inflows: string[] = JSON.parse(
+          JSON.stringify({
+            flow_id: i['flow']['@id'],
+            amount: i['amount'],
+            unit_id: i['unit']['@id'],
+          }),
+        );
+        Iresult_inflows.push(bufferArray_inflows);
+      } else if (i['input'] == false) {
+        const bufferArray_outflows: string[] = JSON.parse(
+          JSON.stringify({
+            flow_id: i['flow']['@id'],
+            amount: i['amount'],
+            unit_id: i['unit']['@id'],
+          }),
+        );
+        Iresult_outflows.push(bufferArray_outflows);
+      }
+    });
+    result.inflows = Iresult_inflows;
+    result.outflows = Iresult_outflows;
     Iresult_process.push(result);
   });
   return Iresult_process;

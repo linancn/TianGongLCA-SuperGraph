@@ -16,11 +16,11 @@ async function Source(source_id: string) {
     },
   });
   return {
-    name: source.data_name,
-    description: source.description,
-    year: source.year,
-    text_reference: source.text_reference,
-    url: source.url,
+    name: source?.data_name,
+    description: source?.description,
+    year: source?.year,
+    text_reference: source?.text_reference,
+    url: source?.url,
   };
 }
 

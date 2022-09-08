@@ -89,11 +89,11 @@ async function flowbyid(flows: []) {
 
 const resolvers = {
   Query: {
-    Flows() {
-      return Flow();
+    Flows(__: any, args: { start: number; end: number }) {
+      return Flow(args.start ?? 1, args.end ?? 10);
     },
-    Processes() {
-      return Process();
+    Processes(__: any, args: { start: number; end: number }) {
+      return Process(args.start ?? 1, args.end ?? 10);
     },
     LCIAMethods() {
       return LCIAMethod();
@@ -101,8 +101,8 @@ const resolvers = {
     FlowByName(__: any, args: { name: string }) {
       return FlowbyName(args.name);
     },
-    ProcessByName(__: any, args: { name: string }) {
-      return ProcessbyName(args.name);
+    ProcessByName(__: any, args: { name: string; start: number; end: number }) {
+      return ProcessbyName(args.name, args.start ?? 1, args.end ?? 10);
     },
   },
   FlowProperty: {

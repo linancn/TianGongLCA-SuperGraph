@@ -27,18 +27,18 @@ async function Documentation(documentation_id: string) {
     },
   });
   return {
-    time: documentation.process_documentation_time_description,
-    technology: documentation.process_documentation_technology_description,
-    geography: documentation.process_documentation_geography_description,
-    project: documentation.process_documentation_project_description,
-    inventory_method: documentation.process_documentation_inventory_method_description,
-    modeling_constants: documentation.process_documentation_modeling_constants_description,
-    intended_applications: documentation.process_documentation_intended_application,
-    restrictions: documentation.process_documentation_restrictions_description,
-    copyright: documentation.process_documentation_copyright,
-    creation_date: JSON.stringify(documentation.process_documentation_creation_date),
-    review_details: documentation.process_documentation_review_details,
-    sources: JSON.stringify(documentation.process_documentation_sources),
+    time: documentation?.process_documentation_time_description,
+    technology: documentation?.process_documentation_technology_description,
+    geography: documentation?.process_documentation_geography_description,
+    project: documentation?.process_documentation_project_description,
+    inventory_method: documentation?.process_documentation_inventory_method_description,
+    modeling_constants: documentation?.process_documentation_modeling_constants_description,
+    intended_applications: documentation?.process_documentation_intended_application,
+    restrictions: documentation?.process_documentation_restrictions_description,
+    copyright: documentation?.process_documentation_copyright,
+    creation_date: JSON.stringify(documentation?.process_documentation_creation_date),
+    review_details: documentation?.process_documentation_review_details,
+    sources: JSON.stringify(documentation?.process_documentation_sources),
   };
 }
 
